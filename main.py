@@ -14,58 +14,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-# [ START demo app ]
-# import webapp2
-
-# class MainHandler(webapp2.RequestHandler):
-#     def get(self):
-#         self.response.write('Hello world!')
-
-# app = webapp2.WSGIApplication([
-#     ('/', MainHandler)
-# ], debug=True)
-# [ END demo app ]
-
 # [START app]
 import logging
-
 from flask import Flask, render_template, request
-from google.appengine.ext import ndb
-from models import Item
-import uuid
 
 app = Flask(__name__)
 app.config.from_object('config')
-
-from views import *
-
 print "I'm here!"
+from views import *
+setupTree()
 
 @app.errorhandler(500)
 def server_error(e):
-    # Log the error and stacktrace.
     logging.exception('An error occurred during a request.')
     return 'An internal error occurred.', 500
-
-@app.route('/form')
-def form():
-    return render_template('form.html')
-
-@app.route('/submitted', methods=['POST'])
-def submitted_form():
-    name = request.form['name']
-    email = request.form['email']
-    site = request.form['site_url']
-    comments = request.form['comments']
-    return render_template(
-        'submitted_form.html',
-        name=name,
-        email=email,
-        site=site,
-        comments=comments)
-
-def hello():
-    return 'Hello World!'
 
 # [END app]

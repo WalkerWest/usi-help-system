@@ -1,0 +1,81 @@
+
+<!DOCTYPE html>
+<!-- these are Jinja2 templates -->
+<html lang="en" ng-app="helpApp">
+<head>
+    <title>USI Help System</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootst/usr/lib/googleAppSDK/google_appenginerapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/Index.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+    <script src="/static/client.js"></script>
+
+</head>
+<body style="margin:3%;background-color:#dcdcdc" ng-controller="HelpController as help">
+
+<!-- fixing github -->
+<br/>
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <img style="float:left; margin-left: 1%;" src="/static/logodraft.jpg" alt="Logo" height="70" width="205">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="/">Home</a></li>
+            <li><a href="/about">About Us</a></li>
+            <li><a href="/form">Contact Us</a></li>
+            <li><a href="/register">Register</a></li>
+          </ul>
+          <ul class="nav navbar-nav floatright">
+            <li><a href="/login">Login</a></li>
+
+            <li><a  href="/logout">Logout</a></li>
+          </ul>
+            <p style="float:right;line-height:3;color:white">You are logged in as ****</p>
+        </div><!--/.nav-collapse -->
+
+      </div>
+    </nav>
+
+<hr>
+
+<div class="row">
+    <form action="" method="post" name="post">
+        <div class="col-md-4">
+            <input type="hidden" name="changeCat"/>
+                <h2>Please select a Category</h2>
+                    <select ng-model="category" ng-change="help.chooseCat()">
+                        <option ng-repeat="tree in trees" value="{{tree.id}}">{{tree.name}}</option>
+                    </select>
+        </div>
+    </form>
+    <form action="" method="post" name="post" ng-show="showSubcats">
+        <div class="col-md-4">
+            <input type="hidden" name="changeCat"/>
+                <h2>Please select a Model</h2>
+                    <select ng-model="subcat" ng-change="help.chooseSubcat()">
+                        <option ng-repeat="child in children" value="{{child.id}}">{{child.name}}</option>
+                    </select>
+        </div>
+    </form>
+    <form action="" method="post" name="post">
+        <div class="col-md-4" id="problems" name="problems">
+                <ul>
+                </ul>
+        </div>
+    </form>
+</div>
+</body>
+
+</html>

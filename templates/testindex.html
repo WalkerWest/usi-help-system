@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block content %}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/Index.js"></script>
+
+<body style="margin:3%">
+<div class="row">
+    <form action="" method="post" name="post">
+        <div class="col-md-4">
+            <input type="hidden" name="changeCat"/>
+                <h2>Please select a Category</h2>
+                    <select name="selectedCat">
+                        {% for node in roots %}
+                            <option>
+                                {% if node.nodeType()=="Category" %}
+                                    {{ node.payload.name }}
+                                {%endif%}
+                            </option>
+                        {% endfor %}
+                    </select>
+            <input type="submit" value="Submit Category" id="category" name="category"/>
+        </div>
+    </form>
+    <form action="" method="post" name="post">
+        <div class="col-md-4">
+            <input type="hidden" name="changeCat"/>
+                <h2>Please select a Model</h2>
+                    <select name="selectedCat">
+                        {% for node in roots %}
+                            <option>
+                                {% if node.nodeType()=="Category" %}
+                                    {{ node.payload.name }}
+                                {%endif%}
+                            </option>
+                        {% endfor %}
+                    </select>
+            <input type="submit" value="Submit Category" id="category" name="category"/>
+        </div>
+    </form>
+    <form action="" method="post" name="post">
+        <div class="col-md-4" id="problems" name="problems">
+                <ul>
+                <input type="hidden" name="changeProb">
+                    {%  for node in roots %}
+                        <li>
+                            {% if node.nodeType()=="Problem" %}
+                                {% if node.payload.solution==None %}
+                                    {{ node.payload.problem }}
+                                {% endif %}
+                                {% if node.payload.problem==None %}
+                                    {{ node.payload.solution }}
+                                {% endif %}
+                            {% endif %}
+                        </li>
+                <input type="submit" value="Submit" id="solution" name="solution"/>
+                    {%  endfor %}
+                </ul>
+        </div>
+    </form>
+</div>
+</body>
+{% endblock %}

@@ -2,18 +2,66 @@
 <!-- these are Jinja2 templates -->
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    {% if title %}
-    <title>{{title}} - USI Help System</title>
-    {% else %}
-    <title>Welcome to the USI Help System</title>
-    {% endif %}
+  <title>USI Help System</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootst/usr/lib/googleAppSDK/google_appenginerapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
-<body>
+<body style="margin:3%;background-color:#dcdcdc">
+<!-- fixing github -->
+<br/>
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <img style="float:left; margin-left: 1%;" src="{{ url_for('static',filename='logodraft.jpg') }}" alt="Logo" height="70" width="205">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <!--<a class="navbar-brand" href="{{url_for('index')}}">USI Help System</a>   -->
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="{{url_for('index')}}">Home</a></li>
+            <li><a href="/about">About Us</a></li>{{url_for('index')}}
+            <li><a href="/form">Contact Us</a></li>
+            <li><a href="/register">Register</a></li>
+          </ul>
+          <ul class="nav navbar-nav floatright">
+            {% if 'username' not in session %}
+            <li><a href="/login">Login</a></li>
+            {% endif %}
 
+            {% if 'username' in session %}
+            <li><a  href="/logout">Logout</a></li>
+            {% endif %}
+          </ul>
+            {% if 'username' in session %}
+            <p style="float:right;line-height:3;color:white">You are logged in as {{ session['username'] }}</p>
+            {% endif %}
+        </div><!--/.nav-collapse -->
+
+      </div>
+    </nav>
+
+<!--
 <div>USI Help System:
     <a href="{{url_for('index')}}">Home</a>
+    <a href="/about">About Us</a>
+    <a href="/form">Contact Us</a>
+    <a href="/register">Register</a>
+    <a href="/login">Login</a>
+    <a href="/logout">Logout</a>
+    {% if 'username' in session %}
+    <p>You are logged in as {{ session['username'] }}</p>
+    {% endif %}
 </div>
+-->
 <hr>
 
 {% with messages = get_flashed_messages() %}

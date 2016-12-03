@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+
+<html>
+ <head>
+   <title>Submitted form</title>
+   <link rel="stylesheet" type="text/css" href="/static/style.css">
+ </head>
+<body>
+<h1>Your message is being processed!</h1>
+<!--List of each name, email, and message sent through contact us page-->
+<p>We will review your comment and contact you as soon as possible!</p>
+
+     <label>First/Last Name:</label><p id="label">{{name}}</p>
+     <label>Email:</label><p id="label2">{{email}}</p>
+     <label>Comment:</label><p id="label3">{{comments}}</p>
+
+</body>
+</html>
+
+{% endblock %}

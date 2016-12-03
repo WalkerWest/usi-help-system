@@ -1,24 +1,47 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h1>Hello, World!</h1>
+<h1>Hello, World!!!</h1>
+<link rel="stylesheet" type="text/css" href="/style.css">
+<script type="text/javascript" src="/Index.js"></script>
 <form action="" method="post" name="post">
-    {{ form.hidden_tag() }}
-    <p>{{form.item(size=30,maxlength=140)}}</p>
+    {{ addForm.hidden_tag() }}
+    <p>{{addForm.item(size=30,maxlength=140)}}</p>
     <p>
-    {% for error in form.item.errors %}
+    {% for error in addForm.item.errors %}
     <span style="color:red;">[{{error}}]</span><br>
     {%endfor%}
     </p>
-    <p><input type="submit" value="Add Item"></p>
+    <p><input type="submit" name="add" value="Add Item"></p>
 </form>
+<div class= "objDiv">
 <p>Items of interest include:</p>
 <ul>
     {% for item in itemsOfInterest %}
     <li>
-            {{item.item}}
+        <form action="" method="post" name="post">
+            <p id="label">{{item.item}}</p>
+            {{ delForm.hidden_tag() }}
+            <input type="hidden" name="id" value="{{ item.id }}">
+            <input type="submit" value="Delete Item" id="deleteButton" name="delete">
+        </form>
+        <form action="" method="post" name="post">
+            {{ editForm.hidden_tag() }}
+            {% if item.id == editForm.id.data and formType == edit%}
+            <p class="editText" id="editText">{{editForm.editItem(size=30,maxlength=140,value=item.item)}}</p>
+            {%endif%}
+            <input type="hidden" name="id" value="{{ item.id }}">
+            {% if item.id == editForm.id.data and request.form.has_key('editItem')%}
+            {% for error in editForm.editItem.errors %}
+            <span style="color:red;">[{{error}}]</span><br>
+            {%endfor%}
+            {%endif%}
+            </p>
+            <input type="submit" class="realEdit" id="edit"  name="edit" value="Edit Item">
+            <!--<input type="button" onclick="PhonyEdit()" id="phonyEdit" value="Edit Item">-->
+        </form>
     </li>
     {% endfor %}
 </ul>
-
+</div>
 {% endblock %}
