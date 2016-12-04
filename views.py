@@ -48,6 +48,10 @@ def index():
     # return render_template("wwindex.html",roots=roots)
     return redirect("static/wwindex.html")
 
+@app.route('/_getUser')
+def get_user():
+    return jsonify({'user':session['username']})
+
 @app.route('/_getTrees')
 def get_tree():
     returnList=[]
@@ -71,15 +75,20 @@ def get_children():
     for tree in roots:
         baseNode=tree.lookup(request.args.get("id"))
         if baseNode!=None: break
-    for node in baseNode.returnRootChildren():
-        returnDict = {}
-        returnDict['id']=node.payload.id
-        if hasattr(node.payload,'name'): returnDict['name']=node.payload.name
-        elif hasattr(node.payload,'problem') and node.payload.problem!=None:
-            returnDict['name'] = node.payload.problem
-        elif hasattr(node.payload,'solution') and node.payload.solution!=None:
-            returnDict['name'] = node.payload.solution
-        returnList.append(returnDict)
+    if baseNode!=None:
+        for node in baseNode.returnRootChildren():
+            returnDict = {}
+            returnDict['id']=node.payload.id
+            if hasattr(node.payload,'name'):
+                returnDict['name']=node.payload.name
+                returnDict['type']="category"
+            elif hasattr(node.payload,'problem') and node.payload.problem!=None:
+                returnDict['name'] = node.payload.problem
+                returnDict['type']="problem"
+            elif hasattr(node.payload,'solution') and node.payload.solution!=None:
+                returnDict['name'] = node.payload.solution
+                returnDict['type']="solution"
+            returnList.append(returnDict)
     return jsonify(returnList)
 
 @app.route('/form')

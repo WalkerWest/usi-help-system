@@ -106,21 +106,21 @@ class Node(ndb.Model):
     def lookup(self,idStr):
         if (str(self.id) == str(idStr)): return self
         else:
-            if self.lft != None: self.lft.lookup(idStr)
-            if self.rgt != None: self.rgt.lookup(idStr)
+            if self.lft != None: return self.lft.lookup(idStr)
+            if self.rgt != None: return self.rgt.lookup(idStr)
             return None
 
     def parseNode(self, inDict):
         if (not inDict.has_key('lft') and not inDict.has_key('rgt')):
-            return Node(self.getObj(inDict['node']))
+            return Node(self.getObj(inDict['node']),id=inDict['node'])
         elif (inDict.has_key('lft') and not inDict.has_key('rgt')):
-            return Node(self.getObj(inDict['node']), lft=self.parseNode(inDict['lft']))
+            return Node(self.getObj(inDict['node']), lft=self.parseNode(inDict['lft']),id=inDict['node'])
         elif (inDict.has_key('rgt') and not inDict.has_key('lft')):
-            return Node(self.getObj(inDict['node']), rgt=self.parseNode(inDict['rgt']))
+            return Node(self.getObj(inDict['node']), rgt=self.parseNode(inDict['rgt']),id=inDict['node'])
         else:
-            return Node(self.getObj(inDict['node']), lft=self.parseNode(inDict['lft']), rgt=self.parseNode(inDict['rgt']))
+            return Node(self.getObj(inDict['node']), lft=self.parseNode(inDict['lft']), rgt=self.parseNode(inDict['rgt']),id=inDict['node'])
 
-    def __init__(self, payload, lft=None, rgt=None, *args, **kwargs):
+    def __init__(self, payload, lft=None, rgt=None, id=None, *args, **kwargs):
         super(Node, self).__init__(*args, **kwargs)
         if isinstance(payload, types.DictionaryType):
             # treeDict=ast.literal_eval(payload)
@@ -131,7 +131,8 @@ class Node(ndb.Model):
             self.lft = myLft
             self.rgt = None
         else:
-            self.id = str(uuid.uuid1())
+            if(id==None): self.id = str(uuid.uuid1())
+            else: self.id=id
             self.payload = payload
             #payload.put()
             self.lft = lft

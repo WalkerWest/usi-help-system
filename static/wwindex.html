@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <!-- these are Jinja2 templates -->
 <html lang="en" ng-app="helpApp">
@@ -42,7 +41,7 @@
 
             <li><a  href="/logout">Logout</a></li>
           </ul>
-            <p style="float:right;line-height:3;color:white">You are logged in as ****</p>
+            <p style="float:right;line-height:3;color:white" ng-show="username!=null">You are logged in as {{username}}</p>
         </div><!--/.nav-collapse -->
 
       </div>
@@ -52,25 +51,45 @@
 
 <div class="row">
     <form action="" method="post" name="post">
-        <div class="col-md-4">
-            <input type="hidden" name="changeCat"/>
-                <h2>Please select a Category</h2>
+        <div class="col-md-3">
+            <div style="line-height:40px;vertical-align:middle;">
+                <span style="float:left;padding-right:10px"><b>Drill through Categories ... </b></span>
+                <input type="button" style="line-height:20px;" value="Reset" ng-show="chosenCats.length>0" ng-click="help.resetCats()">
+            </div>
+            <div style="clear:left;">
+            <ol>
+                <span ng-repeat="cat in chosenCats">
+                    <li>{{cat.name}}</li>
+                </span>
+                <span ng-show="showCatDrop">
+                <li>
                     <select ng-model="category" ng-change="help.chooseCat()">
                         <option ng-repeat="tree in trees" value="{{tree.id}}">{{tree.name}}</option>
                     </select>
+                </li>
+                </span>
+            </ol>
+            <!--<input type=button value="Add New ..."
+                    ng-show="username!=null" ng-click="help.openCreateCat()"
+            />-->
+            </div>
         </div>
     </form>
     <form action="" method="post" name="post" ng-show="showSubcats">
-        <div class="col-md-4">
-            <input type="hidden" name="changeCat"/>
-                <h2>Please select a Model</h2>
-                    <select ng-model="subcat" ng-change="help.chooseSubcat()">
-                        <option ng-repeat="child in children" value="{{child.id}}">{{child.name}}</option>
-                    </select>
+        <div class="col-md-3">
+            <div style="line-height:40px;vertical-align:middle;">
+                <span style="float:left;padding-right:10px"><b>Solve a Problem / Locate a Part</b></span>
+                <input type="button" style="line-height:20px;" value="Reset" ng-show="chosenCats.length>0" ng-click="help.resetCats()">
+            </div>
+            <div style="clear:left;">
+
+            <select ng-model="subcat" ng-change="help.chooseSubcat()">
+                <option ng-repeat="child in children" value="{{child.id}}">{{child.name}}</option>
+            </select>
         </div>
     </form>
     <form action="" method="post" name="post">
-        <div class="col-md-4" id="problems" name="problems">
+        <div class="col-md-3" id="problems" name="problems">
                 <ul>
                 </ul>
         </div>
