@@ -208,7 +208,7 @@ helpApp.controller('HelpController',function HelpController($scope,$mdDialog,$ht
     $scope.showAdvanced = function(ev) {
         $mdDialog.show({
           controller: DialogController,
-          templateUrl: 'dialog1.tmpl.html',
+          templateUrl: '/static/dialog.tmpl.html',
           parent: angular.element(document.body),
           targetEvent: ev,
           clickOutsideToClose:true,
