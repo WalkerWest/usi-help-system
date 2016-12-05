@@ -28,6 +28,8 @@ helpApp.controller('HelpController',function HelpController($scope,$http) {
         }).then(function successCallback(response) {
                 console.log("Got data!");
                 $scope.trees.length=0;
+                $scope.trees.push({ id: '0', name: ''})
+                $scope.category=$scope.trees[0].id;
                 response.data.forEach(function(tree) {
                     console.log(tree.name)
                     $scope.trees.push(tree);
@@ -58,49 +60,53 @@ helpApp.controller('HelpController',function HelpController($scope,$http) {
     $scope.category = "";
     this.chooseCat = function() {
         console.log($scope.category);
-
-        $http({
-            url: "/_getChildren",
-            method: "GET",
-            params: {id:$scope.category}
-        }).then(function successCallback(response) {
-            console.log("Got category children!");
-            var probStart=false;
-            response.data.forEach(function(subcat) {
-                if(subcat.type!="category") probStart=true;
-            })
-            if(probStart) {
-                $scope.showCatDrop=false;
-                appendCat();
-                $scope.showSubcats = true;
-                $scope.children.length=0;
+        if($scope.category!=0) {
+            $http({
+                url: "/_getChildren",
+                method: "GET",
+                params: {id:$scope.category}
+            }).then(function successCallback(response) {
+                console.log("Got category children!");
+                var probStart=false;
                 response.data.forEach(function(subcat) {
-                    console.log(subcat.name)
-                    $scope.children.push(subcat);
+                    if(subcat.type!="category") probStart=true;
                 })
-            } else {
-                $scope.showSubcats = false;
-                console.log("Ready to loop!; showCatDrop is "+$scope.showCatDrop);
-                for (var i in $scope.trees) {
-                    console.log($scope.trees[i].name);
-                    if($scope.trees[i].id==$scope.category) {
-                        $scope.chosenCats.push({id:$scope.category,name:$scope.trees[i].name});
-                    }
-                }
-                console.log(response.data);
-                if (response.data.length>0) {
-                    $scope.trees.length=0;
-                    response.data.forEach(function(tree) {
-                        console.log(tree.name)
-                        $scope.trees.push(tree);
+                if(probStart) {
+                    $scope.showCatDrop=false;
+                    appendCat();
+                    $scope.showSubcats = true;
+                    $scope.children.length=0;
+                    response.data.forEach(function(subcat) {
+                        console.log(subcat.name)
+                        $scope.children.push(subcat);
                     })
-                } else $scope.showCatDrop=false;
-            }
-            // $scope.$apply();
-            $scope.$
-        },function errorCallback(responose) {
-            console.log("error:",response);
-        });
+                } else {
+                    $scope.showSubcats = false;
+                    console.log("Ready to loop!; showCatDrop is "+$scope.showCatDrop);
+                    for (var i in $scope.trees) {
+                        console.log($scope.trees[i].name);
+                        if($scope.trees[i].id==$scope.category) {
+                            $scope.chosenCats.push({id:$scope.category,name:$scope.trees[i].name});
+                        }
+                    }
+                    console.log(response.data);
+                    if (response.data.length>0) {
+                        $scope.trees.length=0;
+                        $scope.trees.push({ id: '0', name: ''})
+                        $scope.category=$scope.trees[0].id;
+                        response.data.forEach(function(tree) {
+                            console.log(tree.name)
+                            $scope.trees.push(tree);
+                        })
+                    } else $scope.showCatDrop=false;
+                }
+                // $scope.$apply();
+                $scope.$
+            },function errorCallback(responose) {
+                console.log("error:",response);
+            });
+
+        }
     }
 
     this.showSubcats = false;
@@ -136,7 +142,7 @@ helpApp.controller('HelpController',function HelpController($scope,$http) {
         $scope.showSubcats=false;
         $scope.trees.length=0;
         $scope.formCat.$setPristine();
-        $scope.trees.push({id:'? string: ?',name:''});
+        //$scope.trees.push({id:'? string: ?',name:''});
         //$scope.model='';
         getTrees();
     }
