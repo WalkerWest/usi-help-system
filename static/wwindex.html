@@ -14,17 +14,17 @@
 
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.9/angular.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.9/angular-animate.js"></script>
-    <!--<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.9/angular-aria.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.1/angular-material.min.js"></script>-->
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.9/angular-sanitize.js"></script>
-    <script src="//angular-ui.github.io/bootstrap/ui-bootstrap-tpls-2.3.0.js"></script>
+    <!--<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.9/angular-sanitize.js"></script>
+    <script src="//angular-ui.github.io/bootstrap/ui-bootstrap-tpls-2.3.0.js"></script>-->
 
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.9/angular-aria.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.1/angular-material.min.js"></script>
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.css">
 
     <script src="/static/client.js"></script>
-
 </head>
-<body style="margin:3%;background-color:#dcdcdc" ng-controller="HelpController as help">
-
+<body style="margin:0%;background-color:#dcdcdc">
+<div ng-controller="HelpController as help" class="md-padding" id="popupContainer">
 <!-- fixing github -->
 <br/>
 <nav class="navbar navbar-inverse navbar-fixed-top">
@@ -107,12 +107,73 @@
         </form>
     </div>
 </div>
-<div class="row">
-    <div class="col-md-12">Test</div>
+<div class="row" ng-show="username!=null">
+    <div class="col-md-12">
+        <!--
+        <p class="inset">
+        Open a dialog over the app's content. Press escape or click outside to close the dialog and
+        send focus back to the triggering button.
+        </p>
+        -->
+
+      <div class="dialog-demo-content" layout="row" layout-wrap layout-margin layout-align="center">
+        <md-button class="md-primary md-raised" ng-click="showAlert($event)"   >
+          Alert Dialog
+        </md-button>
+        <md-button class="md-primary md-raised" ng-click="showConfirm($event)" >
+          Confirm Dialog
+        </md-button>
+        <md-button class="md-primary md-raised" ng-click="showPrompt($event)"  >
+          Prompt Dialog
+        </md-button>
+        <md-button class="md-primary md-raised" ng-click="showAdvanced($event)">
+          Custom Dialog
+        </md-button>
+        <md-button class="md-primary md-raised" ng-click="showTabDialog($event)" >
+          Tab Dialog
+        </md-button>
+        <md-button class="md-primary md-raised" ng-if="listPrerenderedButton" ng-click="showPrerenderedDialog($event)">
+          Pre-Rendered Dialog
+        </md-button>
+      </div>
+        <!--<p class="footer">Note: The <b>Confirm</b> dialog does not use <code>$mdDialog.clickOutsideToClose(true)</code>.</p>-->
+
+      <div ng-if="status" id="status">
+        <b layout="row" layout-align="center center" class="md-padding">
+          {{status}}
+        </b>
+      </div>
+
+        <!--
+        <div class="dialog-demo-prerendered">
+            <md-checkbox ng-model="listPrerenderedButton">Show Pre-Rendered Dialog</md-checkbox>
+            <p class="md-caption">Sometimes you may not want to compile the dialogs template on each opening.</p>
+            <md-checkbox ng-model="customFullscreen" aria-label="Fullscreen custom dialog">Use full screen mode for custom dialog</md-checkbox>
+            <p class="md-caption">Allows the dialog to consume all available space on small devices</p>
+        </div>
+        -->
+
+      <div style="visibility: hidden">
+        <div class="md-dialog-container" id="myDialog">
+          <md-dialog layout-padding>
+            <h2>Pre-Rendered Dialog</h2>
+            <p>
+              This is a pre-rendered dialog, which means that <code>$mdDialog</code> doesn't compile its
+              template on each opening.
+              <br/><br/>
+              The Dialog Element is a static element in the DOM, which is just visually hidden.<br/>
+              Once the dialog opens, we just fetch the element from the DOM into our dialog and upon close
+              we restore the element back into its old DOM position.
+            </p>
+          </md-dialog>
+        </div>
+      </div>
+
+    </div>
 </div>
 </div>
 
-
+</div>
 </body>
 
 </html>
