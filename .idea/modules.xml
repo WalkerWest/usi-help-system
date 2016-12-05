@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/../../PycharmProjects/Tree/.idea/Tree.iml" filepath="$PROJECT_DIR$/../../PycharmProjects/Tree/.idea/Tree.iml" />
       <module fileurl="file://$PROJECT_DIR$/../../PycharmProjects/bb-usi-help-system/.idea/bb-usi-help-system.iml" filepath="$PROJECT_DIR$/../../PycharmProjects/bb-usi-help-system/.idea/bb-usi-help-system.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../PycharmProjects/broke-usi-help-system/.idea/broke-usi-help-system.iml" filepath="$PROJECT_DIR$/../../PycharmProjects/broke-usi-help-system/.idea/broke-usi-help-system.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/usi-help-system.iml" filepath="$PROJECT_DIR$/.idea/usi-help-system.iml" />
     </modules>
   </component>

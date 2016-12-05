@@ -104,6 +104,7 @@ class Node(ndb.Model):
         return None
 
     def lookup(self,idStr):
+        print "Examining "+str(self.id)
         if (str(self.id) == str(idStr)): return self
         else:
             if self.lft != None: return self.lft.lookup(idStr)
@@ -131,7 +132,9 @@ class Node(ndb.Model):
             self.lft = myLft
             self.rgt = None
         else:
-            if(id==None): self.id = str(uuid.uuid1())
+            # Very interesting bug (2016-12-05 WW)
+            # if(id==None): self.id = str(uuid.uuid1())
+            if (id == None): self.id = str(payload.id)
             else: self.id=id
             self.payload = payload
             #payload.put()
@@ -192,8 +195,10 @@ class Node(ndb.Model):
                     views.catList.append(myNode.payload)
                     self.printTree(myNode.lft, scount + 4)
                 if myNode.rgt != None:
-                    if myNode.lft == None: print self.spaceMe(scount) + myNode.payload.name
-                    views.catList.append(myNode.payload)
+                    if myNode.lft == None:
+                        print self.spaceMe(scount) + myNode.payload.name
+                        # This was another bug (12/5/2016 WW); too many entries in catList ... needed indenting
+                        views.catList.append(myNode.payload)
                     self.printTree(myNode.rgt, scount)
 
         else:

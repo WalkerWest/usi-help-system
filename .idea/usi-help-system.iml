@@ -7,5 +7,6 @@
     <orderEntry type="library" name="GAE_SDK" level="project" />
     <orderEntry type="module" module-name="Tree" />
     <orderEntry type="module" module-name="bb-usi-help-system" />
+    <orderEntry type="module" module-name="broke-usi-help-system" />
   </component>
 </module>

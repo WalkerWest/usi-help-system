@@ -66,14 +66,18 @@ def get_tree():
 def get_children():
     returnList=[]
     myNode=None
+    print "The length of catList is "+str(len(catList))
     for category in catList:
+        print category
         if str(request.args.get("id"))==str(category.id):
             myNode=category
             print "Found category "+category.name
             break
     baseNode=None
+    print "Looking up "+str(request.args.get("id"))
     for tree in roots:
-        baseNode=tree.lookup(request.args.get("id"))
+        print tree
+        baseNode=tree.lookup(str(request.args.get("id")))
         if baseNode!=None: break
     if baseNode!=None:
         for node in baseNode.returnRootChildren():
@@ -89,6 +93,8 @@ def get_children():
                 returnDict['name'] = node.payload.solution
                 returnDict['type']="solution"
             returnList.append(returnDict)
+    else:
+        print "Could not find the root node."
     return jsonify(returnList)
 
 @app.route('/form')
@@ -217,15 +223,23 @@ def setupTree():
             honda.addSubNode(storeProb("WOW", None))
             bd.addSubNode(storeCat("itWORKS!"))
 
+            # print "catList is "+str(len(catList))
             r1.printTree()
+            # print "catList is "+str(len(catList))
             r2.printTree()
-            treeDict = r1.convertTree()
-            Tree(tree=str(r1.convertTree())).put()
+            print "catList is "+str(len(catList))
+
+            testTree=str(r1.convertTree())
+            print testTree
+
+            # treeDict = r1.convertTree()
+            Tree(tree=testTree).put()
             Tree(tree=str(r2.convertTree())).put()
-            r1Prime = Node(treeDict)
+            # r1Prime = Node(treeDict)
+            # print r1Prime
+
             print r1
-            print r1Prime
-            r1Prime.printTree()
+            print r2
         else:
             for probsol in Problem.query(): probList.append(probsol)
             for cat in Category.query(): catList.append(cat)

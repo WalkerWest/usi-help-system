@@ -6,10 +6,20 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootst/usr/lib/googleAppSDK/google_appenginerapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="/Index.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+
+    <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-animate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.3.0/ui-bootstrap.min.js"></script>-->
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.9/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.9/angular-animate.js"></script>
+    <!--<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.9/angular-aria.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.1/angular-material.min.js"></script>-->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.9/angular-sanitize.js"></script>
+    <script src="//angular-ui.github.io/bootstrap/ui-bootstrap-tpls-2.3.0.js"></script>
+
+
     <script src="/static/client.js"></script>
 
 </head>
@@ -49,9 +59,11 @@
 
 <hr>
 
+<div class="container">
 <div class="row">
-    <form action="" method="post" name="post">
-        <div class="col-md-3">
+    <div class="col-md-4">
+        <form action="" method="post" name="formCat">
+
             <div style="line-height:40px;vertical-align:middle;">
                 <span style="float:left;padding-right:10px"><b>Drill through Categories ... </b></span>
                 <input type="button" style="line-height:20px;" value="Reset" ng-show="chosenCats.length>0" ng-click="help.resetCats()">
@@ -73,10 +85,10 @@
                     ng-show="username!=null" ng-click="help.openCreateCat()"
             />-->
             </div>
-        </div>
-    </form>
-    <form action="" method="post" name="post" ng-show="showSubcats">
-        <div class="col-md-3">
+        </form>
+    </div>
+    <div class="col-md-4">
+        <form action="" method="post" name="post" ng-show="showSubcats">
             <div style="line-height:40px;vertical-align:middle;">
                 <span style="float:left;padding-right:10px"><b>Solve a Problem / Locate a Part</b></span>
                 <input type="button" style="line-height:20px;" value="Reset" ng-show="chosenCats.length>0" ng-click="help.resetCats()">
@@ -86,15 +98,21 @@
             <select ng-model="subcat" ng-change="help.chooseSubcat()">
                 <option ng-repeat="child in children" value="{{child.id}}">{{child.name}}</option>
             </select>
-        </div>
-    </form>
-    <form action="" method="post" name="post">
-        <div class="col-md-3" id="problems" name="problems">
+        </form>
+    </div>
+    <div class="col-md-4" id="problems" name="problems">
+        <form action="" method="post" name="post">
                 <ul>
                 </ul>
-        </div>
-    </form>
+        </form>
+    </div>
 </div>
+<div class="row">
+    <div class="col-md-12">Test</div>
+</div>
+</div>
+
+
 </body>
 
 </html>
