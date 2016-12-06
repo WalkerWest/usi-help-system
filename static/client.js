@@ -60,14 +60,6 @@ helpApp.controller('HelpController',function HelpController($scope,$mdDialog,$ht
         }
     }
 
-    function appendSubcat() {
-        for (var i in $scope.children) {
-            if($scope.children[i].id==$scope.subcat) {
-                $scope.chosenSubcats.push({id:$scope.subcat,name:$scope.children[i].name});
-            }
-        }
-    }
-
     $scope.partStart=false;
     $scope.probStart=false;
     $scope.category = "";
@@ -121,16 +113,23 @@ helpApp.controller('HelpController',function HelpController($scope,$mdDialog,$ht
         }
     }
 
-    this.chooseSubcat = function() {
-        console.log($scope.subcat);
-        if($scope.subcat!=0) {
+    this.chooseSubcat = function(myId) {
+        if(myId==null) myId=$scope.subcat;
+        console.log(myId);
+        if(myId!=0) {
             $http({
                 url: "/_getChildren",
                 method: "GET",
-                params: {id:$scope.subcat}
+                params: {id:myId}
             }).then(function successCallback(response) {
                 console.log("Got subcat children!");
-                appendSubcat();
+
+                for (var i in $scope.children) {
+                    if($scope.children[i].id==myId) {
+                        $scope.chosenSubcats.push({id:myId,name:$scope.children[i].name});
+                    }
+                }
+
                 $scope.children.length=0;
                 response.data.forEach(function(subcat) {
                     console.log(subcat.name)
@@ -140,6 +139,7 @@ helpApp.controller('HelpController',function HelpController($scope,$mdDialog,$ht
                 if(response.data.length==0) {
                     console.log("Turning off the subcat drop!");
                     $scope.showSubcatDrop=false;
+                    $scope.showSurrender();
                     //$scope.$apply();
                 }
             },function errorCallback(response) {
@@ -238,6 +238,47 @@ helpApp.controller('HelpController',function HelpController($scope,$mdDialog,$ht
             .targetEvent(ev)
         );
     };
+
+    $scope.showSolution = function(ev,myObj) {
+        // Appending dialog to document.body to cover sidenav in docs app
+        // Modal dialogs should fully cover application
+        // to prevent interaction outside of dialog
+        console.log("Showing solution!");
+        /*
+        if(myObj.hasOwnProperty('url') && myObj.url!=null)
+            boxStr=myObj.solution+" (for more information, see: <a href='"+myObj.url+"'>Click Here</a>)";
+        else boxStr=myObj.solution;
+        */
+        boxStr=myObj.solution;
+        $mdDialog.show(
+          $mdDialog.alert()
+            .parent(angular.element(document.querySelector('#popupContainer')))
+            .clickOutsideToClose(true)
+            .title('Solution Found')
+            .textContent(boxStr)
+            .ariaLabel('Alert Dialog Demo')
+            .ok('Got it!')
+            .targetEvent(ev)
+        );
+    };
+
+    $scope.showSurrender = function(ev) {
+        // Appending dialog to document.body to cover sidenav in docs app
+        // Modal dialogs should fully cover application
+        // to prevent interaction outside of dialog
+        $mdDialog.show(
+          $mdDialog.alert()
+            .parent(angular.element(document.querySelector('#popupContainer')))
+            .clickOutsideToClose(true)
+            .title('We Surrender!')
+            .textContent('You have stumped us.')
+            .ariaLabel('Alert Dialog Demo')
+            .ok('Got it!')
+            .targetEvent(ev)
+        );
+    };
+
+
 
     $scope.showConfirm = function(ev) {
         // Appending dialog to document.body to cover sidenav in docs app

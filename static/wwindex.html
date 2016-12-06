@@ -105,17 +105,17 @@
     </div>
     <div class="col-md-4" id="problems" name="problems">
         <center><img src="/static/img/No2.png" style="width:50px;"></center><br>
-        <p align="center"><b>Are you looking for a part or solving a problem?</b></p>
+        <p align="center"><b>Are you <i>Looking for a Part</i> or <i>Solving a Problem</i>?</b></p>
         <p align="center">&nbsp;&nbsp;</p>
         <form action="" method="post" name="post">
             <span ng-show="probStart && !partStart"><p align="center" style="color:#ff0000;">
-                <b>Problem / Solution Set(s) exist!</b></p></span>
+                <b>Solving a Problem</b> was chosen.</p></span>
             <span ng-show="partStart && !probStart"><p align="center" style="color:#ff0000;">
-                <b>Part(s) exist!</b></p>
+                <b>Looking for a Part</b> was chosen.</p>
             </span>
             <span ng-show="partStart && probStart">
             <center>
-                <input type="button" value="Looing for a Part" ng-click="help.findPart()">&nbsp;&nbsp;&nbsp;
+                <input type="button" value="Looking for a Part" ng-click="help.findPart()">&nbsp;&nbsp;&nbsp;
                 <input type="button" value="Solving a Problem" ng-click="help.solveProblem()">
             </center>
             <br><br>
@@ -136,16 +136,30 @@
         </p>
 
         <form action="" method="post" name="post" ng-show="showSubcats && ((probStart && !partStart) || (partStart && !probStart))">
-            <ul>
+            <ul style="list-style-type:none;">
                 <span ng-repeat="cat in chosenSubcats">
-                    <li>{{cat.name}}</li>
+                    <li>
+                        <span ng-if="$first && !partStart"><b>Problem:</b> {{cat.name}}</span>
+                        <span ng-if="!$first && !partStart"><b>Q{{$index}}.</b>&nbsp;&nbsp;{{cat.name}}</span>
+                        <span ng-if="partStart">{{cat.name}}</span>
+                    </li>
                 </span>
                 <span ng-show="showSubcatDrop">
-                <li>
-                    <select ng-model="subcat" ng-change="help.chooseSubcat()">
-                        <option ng-repeat="child in children" value="{{child.id}}">{{child.name}}</option>
-                    </select>
-                </li>
+                <li><nobr>
+                    <span ng-show="!partStart && chosenSubcats.length>=1"><b>Q{{chosenSubcats.length}}.</b>&nbsp;</span>
+                    <span ng-show="partStart || chosenSubcats.length==0">
+                        <select ng-model="subcat" ng-change="help.chooseSubcat()">
+                            <option ng-repeat="child in children" value="{{child.id}}">
+                                {{child.name}}
+                            </option>
+                        </select>
+                    </span>
+                    <span ng-show="probStart && chosenSubcats.length>=1">
+                        {{children[0].name}}
+                        <input type="button" value="Yes" ng-click="help.chooseSubcat(children[0].id)">
+                        <input type="button" value="No" ng-click="showSolution($event,children[0])">
+                    </span>
+                </nobr></li>
                 </span>
             </ul>
           </form>

@@ -96,7 +96,9 @@ def get_children():
                 returnDict['type']=node.payload.type
             elif hasattr(node.payload,'problem') and node.payload.problem!=None and node.payload.problem!="":
                 returnDict['name'] = node.payload.problem
-                returnDict['type']="problem"
+                returnDict['type'] = "problem"
+                returnDict['solution'] = node.payload.solution
+                returnDict['url'] = node.payload.url
             elif hasattr(node.payload,'solution') and node.payload.solution!=None and node.payload.solution!="":
                 returnDict['name'] = node.payload.solution
                 returnDict['type']="solution"
@@ -222,8 +224,8 @@ def setupTree():
             ws1=wontStart.addSubNode(storeProb("Is there gas in the tank?","Put gas in the mower!"))
             ws2=ws1.addSubNode(storeProb("Will the mower jump start?","Replace the battery!"))
             ws3=ws2.addSubNode(storeProb(
-                "Do the spark plugs appear to be worn?",
-                "Replace the plugs!",
+                "Are the spark plugs appear clean?",
+                "Clear or replace the plugs!",
                 url="https://goo.gl/FJneX0"))
             wontCut = lawnmower.addSubNode(storeProb("Mower isn't cutting the grass well",None))
             wc1=wontCut.addSubNode(storeProb(
