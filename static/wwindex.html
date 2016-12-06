@@ -60,15 +60,32 @@
 <hr>
 
 <div class="container">
+<div class="row" ng-show="username!=null">
+    <div class="col-md-12">
+        <blockquote>
+
+        <p>Welcome to the <b>USI Help System</b> (created by Team 'merica).  Searching our knowledge base is as
+            easy as one, two, three:</p>
+
+            <ul>
+                <li><b>First</b>, choose a "category" for the search.</li>
+                <li><b>Second</b>, indicate if you'd like to find a part or solve a problem.</li>
+                <li><b>Third</b>, find your part or solution!</p></li>
+            </ul>
+
+        </blockquote>
+    </div>
+</div>
 <div class="row">
     <div class="col-md-4">
+        <center><img src="/static/img/No1.png" style="width:50px;"></center><br>
+        <p align="center"><b>Use category drilldown to narrow search ... </b></p>
+        <p align="center">&nbsp;
+            <span ng-show="chosenCats.length>0">
+            [ <a ng-show="chosenCats.length>0" ng-click="help.resetCats()">Reset</a> ]
+            </span>&nbsp;
+        </p>
         <form action="" method="post" name="formCat">
-
-            <div style="line-height:40px;vertical-align:middle;">
-                <span style="float:left;padding-right:10px"><b>Drill through Categories ... </b></span>
-                <input type="button" style="line-height:20px;" value="Reset" ng-show="chosenCats.length>0" ng-click="help.resetCats()">
-            </div>
-            <div style="clear:left;">
             <ol>
                 <span ng-repeat="cat in chosenCats">
                     <li>{{cat.name}}</li>
@@ -84,30 +101,57 @@
             <!--<input type=button value="Add New ..."
                     ng-show="username!=null" ng-click="help.openCreateCat()"
             />-->
-            </div>
-        </form>
-    </div>
-    <div class="col-md-4">
-        <form action="" method="post" name="post" ng-show="showSubcats">
-            <div style="line-height:40px;vertical-align:middle;">
-                <span style="float:left;padding-right:10px"><b>Solve a Problem / Locate a Part</b></span>
-                <input type="button" style="line-height:20px;" value="Reset" ng-show="chosenCats.length>0" ng-click="help.resetCats()">
-            </div>
-            <div style="clear:left;">
-
-            <select ng-model="subcat" ng-change="help.chooseSubcat()">
-                <option ng-repeat="child in children" value="{{child.id}}">{{child.name}}</option>
-            </select>
         </form>
     </div>
     <div class="col-md-4" id="problems" name="problems">
+        <center><img src="/static/img/No2.png" style="width:50px;"></center><br>
+        <p align="center"><b>Are you looking for a part or solving a problem?</b></p>
+        <p align="center">&nbsp;&nbsp;</p>
         <form action="" method="post" name="post">
-                <ul>
-                </ul>
+            <span ng-show="probStart && !partStart"><p align="center" style="color:#ff0000;">
+                <b>Problem / Solution Set(s) exist!</b></p></span>
+            <span ng-show="partStart && !probStart"><p align="center" style="color:#ff0000;">
+                <b>Part(s) exist!</b></p>
+            </span>
+            <span ng-show="partStart && probStart">
+            <center>
+                <input type="button" value="Looing for a Part" ng-click="help.findPart()">&nbsp;&nbsp;&nbsp;
+                <input type="button" value="Solving a Problem" ng-click="help.solveProblem()">
+            </center>
+            <br><br>
+            </span>
         </form>
     </div>
+    <div class="col-md-4">
+        <center><img src="/static/img/No3.png" style="width:50px;"></center><br>
+        <p align="center" ng-show="(!probStart && !partStart) || (probStart && partStart)">
+            <b>... then drill down to the part or solution!</b>
+        </p>
+        <p align="center" ng-show="probStart && !partStart"><b>... select a problem / find a solution!</b></p>
+        <p align="center" ng-show="partStart && !probStart"><b>... continue drilling to find your part!</b></p>
+        <p align="center">&nbsp;
+            <span ng-show="chosenCats.length>0">
+            [ <a ng-show="chosenCats.length>0" ng-click="help.resetCats()">Reset</a> ]
+            </span>&nbsp;
+        </p>
+
+        <form action="" method="post" name="post" ng-show="showSubcats && ((probStart && !partStart) || (partStart && !probStart))">
+            <ul>
+                <span ng-repeat="cat in chosenSubcats">
+                    <li>{{cat.name}}</li>
+                </span>
+                <span ng-show="showSubcatDrop">
+                <li>
+                    <select ng-model="subcat" ng-change="help.chooseSubcat()">
+                        <option ng-repeat="child in children" value="{{child.id}}">{{child.name}}</option>
+                    </select>
+                </li>
+                </span>
+            </ul>
+          </form>
+    </div>
 </div>
-<div class="row" ng-show="username!=null">
+<div class="row" ng-show="username=='off'">
     <div class="col-md-12">
         <!--
         <p class="inset">

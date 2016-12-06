@@ -13,6 +13,7 @@ helpApp.controller('HelpController',function HelpController($scope,$mdDialog,$ht
     */
 
     $scope.chosenCats = []
+    $scope.chosenSubcats = []
 
     $scope.trees = [
         { id: '1', name: 'Test #1'},
@@ -49,6 +50,7 @@ helpApp.controller('HelpController',function HelpController($scope,$mdDialog,$ht
     ];
 
     $scope.showCatDrop = true;
+    $scope.showSubcatDrop = false;
 
     function appendCat() {
         for (var i in $scope.trees) {
@@ -58,6 +60,16 @@ helpApp.controller('HelpController',function HelpController($scope,$mdDialog,$ht
         }
     }
 
+    function appendSubcat() {
+        for (var i in $scope.children) {
+            if($scope.children[i].id==$scope.subcat) {
+                $scope.chosenSubcats.push({id:$scope.subcat,name:$scope.children[i].name});
+            }
+        }
+    }
+
+    $scope.partStart=false;
+    $scope.probStart=false;
     $scope.category = "";
     this.chooseCat = function() {
         console.log($scope.category);
@@ -68,12 +80,13 @@ helpApp.controller('HelpController',function HelpController($scope,$mdDialog,$ht
                 params: {id:$scope.category}
             }).then(function successCallback(response) {
                 console.log("Got category children!");
-                var probStart=false;
                 response.data.forEach(function(subcat) {
-                    if(subcat.type!="category") probStart=true;
+                    if(subcat.type=="problem") $scope.probStart=true;
+                    else if (subcat.type=="part") $scope.partStart=true;
                 })
-                if(probStart) {
+                if($scope.probStart || $scope.partStart) {
                     $scope.showCatDrop=false;
+                    $scope.showSubcatDrop=true;
                     appendCat();
                     $scope.showSubcats = true;
                     $scope.children.length=0;
@@ -101,14 +114,41 @@ helpApp.controller('HelpController',function HelpController($scope,$mdDialog,$ht
                         })
                     } else $scope.showCatDrop=false;
                 }
-                // $scope.$apply();
-                $scope.$
-            },function errorCallback(responose) {
+            },function errorCallback(response) {
                 console.log("error:",response);
             });
 
         }
     }
+
+    this.chooseSubcat = function() {
+        console.log($scope.subcat);
+        if($scope.subcat!=0) {
+            $http({
+                url: "/_getChildren",
+                method: "GET",
+                params: {id:$scope.subcat}
+            }).then(function successCallback(response) {
+                console.log("Got subcat children!");
+                appendSubcat();
+                $scope.children.length=0;
+                response.data.forEach(function(subcat) {
+                    console.log(subcat.name)
+                    $scope.children.push(subcat);
+                })
+                console.log("The subcat length is "+response.data.length)
+                if(response.data.length==0) {
+                    console.log("Turning off the subcat drop!");
+                    $scope.showSubcatDrop=false;
+                    //$scope.$apply();
+                }
+            },function errorCallback(response) {
+                console.log("error:",response);
+            });
+
+        }
+    }
+
 
     this.showSubcats = false;
 
@@ -136,15 +176,45 @@ helpApp.controller('HelpController',function HelpController($scope,$mdDialog,$ht
     this.resetCats = function() {
         console.log("Reset button pushed!");
         $scope.chosenCats.length=0;
+        $scope.chosenSubcats.length=0;
         $scope.children.length=0;
         $scope.showCatDrop=true;
         $scope.showSubcats=false;
         $scope.trees.length=0;
         $scope.formCat.$setPristine();
+        $scope.partStart=false;
+        $scope.probStart=false;
         //$scope.trees.push({id:'? string: ?',name:''});
         //$scope.model='';
         getTrees();
+        $scope.children.push({ id: '0', name: ''})
+        $scope.subcat=$scope.children[0].id;
     }
+
+    this.findPart = function() {
+        console.log("Find Part was clicked!");
+        $scope.probStart=false;
+        newArr=[]
+        for(var i in $scope.children) {
+            if($scope.children[i].type!="problem" && $scope.children[i].type!="solution" ) {
+                newArr.push($scope.children[i])
+            }
+        }
+        $scope.children=newArr;
+    }
+
+    this.solveProblem = function() {
+        console.log("Solve Problem was clicked!");
+        $scope.partStart=false;
+        newArr=[]
+        for(var i in $scope.children) {
+            if($scope.children[i].type=="problem" || $scope.children[i].type=="solution" ) {
+                newArr.push($scope.children[i])
+            }
+        }
+        $scope.children=newArr;
+    }
+
 
     /***************************************************************************
      * DIALOG STUFF                                                            *

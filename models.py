@@ -65,6 +65,8 @@ class Category(ndb.Model):
     #id=""
     name=ndb.StringProperty()
     id=ndb.StringProperty()
+    type=ndb.StringProperty()
+    url=ndb.StringProperty()
 
     def __init__(self,*args,**kwargs):
         super(Category, self).__init__(*args, **kwargs)
@@ -73,18 +75,23 @@ class Category(ndb.Model):
         #     views.counter += 1
         #     print (views.counter)
         if kwargs.has_key('name'): self.id=kwargs['name']
+        if kwargs.has_key('type'): self.id=kwargs['type']
+        if kwargs.has_key('url'): self.id=kwargs['url']
+        else: self.type='category'
         if kwargs.has_key('id'): self.id=kwargs['id']
-        else:  self.id=str(uuid.uuid1())
+        else: self.id=str(uuid.uuid1())
 
 class Problem(ndb.Model):
     problem=ndb.StringProperty()
     solution=ndb.StringProperty()
     id=ndb.StringProperty()
+    url=ndb.StringProperty()
 
     def __init__(self,*args,**kwargs):
         super(Problem, self).__init__(*args, **kwargs)
         if kwargs.has_key('problem'): self.id=kwargs['problem']
         if kwargs.has_key('solution'): self.id=kwargs['solution']
+        if kwargs.has_key('url'): self.id = kwargs['url']
         if kwargs.has_key('id'): self.id=kwargs['id']
         else: self.id=str(uuid.uuid1())
 
@@ -107,9 +114,12 @@ class Node(ndb.Model):
         print "Examining "+str(self.id)
         if (str(self.id) == str(idStr)): return self
         else:
-            if self.lft != None: return self.lft.lookup(idStr)
-            if self.rgt != None: return self.rgt.lookup(idStr)
-            return None
+            myVal = None
+            if self.lft!=None:
+                myVal = self.lft.lookup(idStr)
+            if myVal==None and self.rgt!=None:
+                myVal=self.rgt.lookup(idStr)
+            return myVal
 
     def parseNode(self, inDict):
         if (not inDict.has_key('lft') and not inDict.has_key('rgt')):
@@ -187,61 +197,71 @@ class Node(ndb.Model):
             myNode=self
         if isinstance(myNode.payload, Category):
             if myNode.rgt == None and myNode.lft == None:
-                print self.spaceMe(scount) + myNode.payload.name
+                print self.spaceMe(scount) + myNode.payload.name + " (" + myNode.payload.id + ")"
                 views.catList.append(myNode.payload)
             else:
                 if myNode.lft != None:
-                    print self.spaceMe(scount) + myNode.payload.name
+                    print self.spaceMe(scount) + myNode.payload.name + " (" + myNode.payload.id + ")"
                     views.catList.append(myNode.payload)
                     self.printTree(myNode.lft, scount + 4)
                 if myNode.rgt != None:
                     if myNode.lft == None:
-                        print self.spaceMe(scount) + myNode.payload.name
+                        print self.spaceMe(scount) + myNode.payload.name + " (" + myNode.payload.id + ")"
                         # This was another bug (12/5/2016 WW); too many entries in catList ... needed indenting
                         views.catList.append(myNode.payload)
                     self.printTree(myNode.rgt, scount)
 
         else:
             if myNode.rgt == None and myNode.lft == None:
-                print self.spaceMe(scount) + self.payloadVal(myNode.payload)
+                print self.spaceMe(scount) + self.payloadVal(myNode.payload) + " (" + myNode.payload.id + ")"
                 views.probList.append(myNode.payload)
             else:
                 if myNode.lft != None:
-                    print self.spaceMe(scount) + self.payloadVal(myNode.payload)
+                    print self.spaceMe(scount) + self.payloadVal(myNode.payload) + " (" + myNode.payload.id + ")"
                     views.probList.append(myNode.payload)
                     self.printTree(myNode.lft, scount + 4)
                 if myNode.rgt != None:
                     if myNode.lft == None:
-                        print self.spaceMe(scount) + self.payloadVal(myNode.payload)
+                        print self.spaceMe(scount) + self.payloadVal(myNode.payload) + " (" + myNode.payload.id + ")"
                         views.probList.append(myNode.payload)
                     self.printTree(myNode.rgt, scount)
 
-    def convertTree(self, myNode=None, scount=0):
+    def convertTree(self, myNode=None):
+        if myNode == None: myNode = self
+        if myNode.rgt == None and myNode.lft == None: return { 'node': myNode.payload.id }
+        elif myNode.rgt!=None and myNode.lft==None:
+            return {'node': myNode.payload.id, 'rgt': self.convertTree(myNode=myNode.rgt)}
+        elif myNode.lft!=None and myNode.rgt==None:
+            return {'node': myNode.payload.id, 'lft': self.convertTree(myNode=myNode.lft)}
+        else:
+            return {'node': myNode.payload.id,
+                    'lft': self.convertTree(myNode=myNode.lft),
+                    'rgt': self.convertTree(myNode=myNode.rgt)}
+
+    def convertTreeOld(self, myNode=None, scount=0):
 
         if myNode == None:
             myNode = self
 
         if myNode.rgt == None and myNode.lft == None:
             print self.spaceMe(scount) + myNode.payload.id
-            return { 'node': myNode.payload.id }
+            return {'node': myNode.payload.id}
         else:
             if myNode.lft != None:
                 if myNode.rgt == None:
                     print self.spaceMe(
                         scount) + "left guid: " + myNode.lft.payload.id + " node guid: " + myNode.payload.id
-                    return {'node':myNode.payload.id, 'lft':self.convertTree(myNode.lft, scount + 4)}
+                    return {'node': myNode.payload.id, 'lft': self.convertTree(myNode.lft, scount + 4)}
                 else:
                     print self.spaceMe(
                         scount) + "left guid: " + myNode.lft.payload.id + " node guid: " + myNode.payload.id + " right guid: " + myNode.rgt.payload.id
-                    return { 'node': myNode.payload.id, 'lft': self.convertTree(myNode.lft, scount + 4), 'rgt': self.convertTree(myNode.rgt, scount)}
+                    return {'node': myNode.payload.id, 'lft': self.convertTree(myNode.lft, scount + 4),
+                            'rgt': self.convertTree(myNode.rgt, scount)}
                 self.convertTree(myNode.lft, scount + 4)
-            #if myNode.rgt != None:
-                #if myNode.lft == None:
-                    #print self.spaceMe(scount) + "right guid: " + myNode.rgt.payload.id + " node guid: " + myNode.payload.id
-                #self.convertTree(myNode.rgt, scount)
-
-    # def addProblem(self,name):
-    #    retProb=Problem(name,self.rgt,self.rgt+1)
+                # if myNode.rgt != None:
+                # if myNode.lft == None:
+                # print self.spaceMe(scount) + "right guid: " + myNode.rgt.payload.id + " node guid: " + myNode.payload.id
+                # self.convertTree(myNode.rgt, scount)
 
 class Tree(ndb.Model):
     tree = ndb.StringProperty()

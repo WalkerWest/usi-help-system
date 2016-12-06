@@ -14,15 +14,15 @@ catList=[]
 probList=[]
 roots = []
 
-def storeCat(myCat):
-    myCat2=Category(name=myCat)
+def storeCat(myCat,type='category',url=""):
+    myCat2=Category(name=myCat,type=type,url=url)
     myCat2.put()
     return myCat2
 
-def storeProb(myProb, myAns):
+def storeProb(myProb, myAns, url=""):
     if myProb==None: myProb=""
     if myAns==None: myAns=""
-    myProb2=Problem(problem=myProb,solution=myAns)
+    myProb2=Problem(problem=myProb,solution=myAns,url=url)
     myProb2.put()
     return myProb2
 
@@ -38,7 +38,8 @@ def index():
     if request.form.has_key("changeCat") or request.form.has_key("changeProb"):
         myObj = None
         for node in roots:
-            if (node.nodeType() == "Category" and node.payload.name == request.form['selectedCat']) or node.nodeType() == "Problem":
+            if (node.nodeType() == "Category" and node.payload.name == request.form['selectedCat']) \
+                    or node.nodeType() == "Problem":
                 myObj = node
                 break
         if myObj!=None:
@@ -73,6 +74,13 @@ def get_children():
             myNode=category
             print "Found category "+category.name
             break
+    if(myNode==None):
+        for problem in probList:
+            print problem
+            if str(request.args.get("id")) == str(problem.id):
+                myNode = problem
+                print "Found problem " + problem.problem + " / " + problem.solution
+                break
     baseNode=None
     print "Looking up "+str(request.args.get("id"))
     for tree in roots:
@@ -85,11 +93,11 @@ def get_children():
             returnDict['id']=node.payload.id
             if hasattr(node.payload,'name'):
                 returnDict['name']=node.payload.name
-                returnDict['type']="category"
-            elif hasattr(node.payload,'problem') and node.payload.problem!=None:
+                returnDict['type']=node.payload.type
+            elif hasattr(node.payload,'problem') and node.payload.problem!=None and node.payload.problem!="":
                 returnDict['name'] = node.payload.problem
                 returnDict['type']="problem"
-            elif hasattr(node.payload,'solution') and node.payload.solution!=None:
+            elif hasattr(node.payload,'solution') and node.payload.solution!=None and node.payload.solution!="":
                 returnDict['name'] = node.payload.solution
                 returnDict['type']="solution"
             returnList.append(returnDict)
@@ -204,42 +212,91 @@ def setupTree():
     if len(roots) == 0:
         metaData = Tree.query()
         if len(metaData.fetch(None)) == 0:
-            r1 = Node(storeCat("Lawn Equipment"))
-            roots.append(r1)
-            lm = r1.addSubNode(storeCat("Lawn Mower"))
-            we = r1.addSubNode(storeCat("Weed Eater"))
-            r1.addSubNode(storeCat("Edger"))
+            root1 = Node(storeCat("Lawn Equipment"))
+            roots.append(root1)
+            lawnmower = root1.addSubNode(storeCat("Lawn Mower"))
+            weedeater = root1.addSubNode(storeCat("Weed Eater"))
+            edger=root1.addSubNode(storeCat("Edger"))
 
-            r2 = Node(storeCat("Mobile Phone"))
-            rr2 = r2.addSubNode(storeProb("Are you having a problem?", None))
-            roots.append(r2);
-            gp = rr2.addSubNode(storeProb("Does the lawn mower have gas?", None))
-            rr2.addSubNode(storeProb("Is the lawn mower making noises?", None))
-            gp.addSubNode(storeProb(None, "You don't have any gas!"))
+            wontStart = lawnmower.addSubNode(storeProb("Lawn mower won't start",None))
+            ws1=wontStart.addSubNode(storeProb("Is there gas in the tank?","Put gas in the mower!"))
+            ws2=ws1.addSubNode(storeProb("Will the mower jump start?","Replace the battery!"))
+            ws3=ws2.addSubNode(storeProb(
+                "Do the spark plugs appear to be worn?",
+                "Replace the plugs!",
+                url="https://goo.gl/FJneX0"))
+            wontCut = lawnmower.addSubNode(storeProb("Mower isn't cutting the grass well",None))
+            wc1=wontCut.addSubNode(storeProb(
+                "Is the grass in your lawn particularly tall?",
+                "Raise the cutting height on your lawn mower"
+            ))
+            wc2=wc1.addSubNode(storeProb(
+                "Does the blade appear to be worn or dull?",
+                "Sharpen the blade",
+                "https://goo.gl/ANuuah"
+            ))
 
-            we.addSubNode(storeCat("Torro"))
-            honda = lm.addSubNode(storeCat("Honda"))
-            bd = lm.addSubNode(storeCat("B&D"))
-            honda.addSubNode(storeProb("WOW", None))
-            bd.addSubNode(storeCat("itWORKS!"))
+            toro = lawnmower.addSubNode(storeCat("Toro",type='part'))
+            honda = lawnmower.addSubNode(storeCat("Honda",type='part'))
+            craftsman = lawnmower.addSubNode(storeCat("Craftsman",type='part'))
+            honda.addSubNode(storeCat("Spark Plug", type='part',url="https://goo.gl/4988HT"))
+            honda.addSubNode(storeCat("Blade", type='part', url="https://goo.gl/6IzHDH"))
+            honda.addSubNode(storeCat("Battery", type='part', url="https://goo.gl/j32Qs0"))
+            toro.addSubNode(storeCat("Spark Plug", type='part',url="https://goo.gl/iSq3IM"))
+            toro.addSubNode(storeCat("Blade", type='part', url="https://goo.gl/awrF4W"))
+            toro.addSubNode(storeCat("Battery", type='part', url="https://goo.gl/hxFbMM"))
+            craftsman.addSubNode(storeCat("Spark Plug", type='part',url="https://goo.gl/uMbjzb"))
+            craftsman.addSubNode(storeCat("Blade", type='part', url="https://goo.gl/6mcSAe"))
+            craftsman.addSubNode(storeCat("Battery", type='part', url="https://goo.gl/Txykkp"))
 
-            # print "catList is "+str(len(catList))
-            r1.printTree()
-            # print "catList is "+str(len(catList))
-            r2.printTree()
-            print "catList is "+str(len(catList))
+            root2 = Node(storeCat("Smartphone"))
+            roots.append(root2);
+            android=root2.addSubNode(storeCat("Google Android"))
+            apple=root2.addSubNode(storeCat("Apple iOS"))
 
-            testTree=str(r1.convertTree())
+            slow=android.addSubNode(storeProb("My phone is slow",None))
+            slow.addSubNode(storeProb(
+                "Have you tried a reboot?","Reboot the phone"))
+            slow.addSubNode(storeProb(
+                "Are there a lot of apps loaded?","Close the apps you aren't actively using"))
+            slow.addSubNode(storeProb(
+                "Is the phone out of storage space?","Removed unused apps or upgrade the storage"))
+            app=android.addSubNode(storeProb("I want to develop an app","Follow a tutorial",
+                url="https://developer.android.com/training/basics/firstapp/index.html"))
+
+            slow=apple.addSubNode(storeProb("My phone is slow",None))
+            slow.addSubNode(storeProb(
+                "Have you tried a reboot?","Reboot the phone"))
+            slow.addSubNode(storeProb(
+                "Are there a lot of apps loaded?","Close the apps you aren't actively using"))
+            slow.addSubNode(storeProb(
+                "Is the phone out of storage space?","Removed unused apps or upgrade the storage"))
+            apple.addSubNode(storeProb("I want to develop an app","Follow a tutorial",
+                url="https://developer.apple.com/library/content/referencelibrary/GettingStarted/DevelopiOSAppsSwift/"))
+
+            moto=android.addSubNode(storeCat("Motorola",type='part'))
+            samsung=android.addSubNode(storeCat("Samsung", type='part'))
+            huawei=android.addSubNode(storeCat("Huawei", type='part'))
+            moto.addSubNode(storeCat("Case",type='part',url="https://goo.gl/aSNG2U"))
+            samsung.addSubNode(storeCat("Case",type='part',url="https://goo.gl/T10QPU"))
+            huawei.addSubNode(storeCat("Case",type='part',url="https://goo.gl/frSgRq"))
+            apple.addSubNode(storeCat("Case",type='part',url="https://goo.gl/6vclg7"))
+
+            root1.printTree()
+            root2.printTree()
+
+            testTree=str(root1.convertTree())
             print testTree
 
-            # treeDict = r1.convertTree()
+            # treeDict = root1.convertTree()
             Tree(tree=testTree).put()
-            Tree(tree=str(r2.convertTree())).put()
+            Tree(tree=str(root2.convertTree())).put()
             # r1Prime = Node(treeDict)
             # print r1Prime
 
-            print r1
-            print r2
+            print root1
+            print root2
+
         else:
             for probsol in Problem.query(): probList.append(probsol)
             for cat in Category.query(): catList.append(cat)
