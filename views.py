@@ -261,24 +261,31 @@ def setupTree():
             apple=root2.addSubNode(storeCat("Apple iOS"))
 
             slow=android.addSubNode(storeProb("My phone is slow",None))
-            slow.addSubNode(storeProb(
+            sl1=slow.addSubNode(storeProb(
                 "Has the phone been restarted recently?","Reboot the phone"))
-            slow.addSubNode(storeProb(
+            sl2=sl1.addSubNode(storeProb(
                 "Are there only a few apps open?","Close the apps you aren't actively using"))
-            slow.addSubNode(storeProb(
+            sl3=sl2.addSubNode(storeProb(
                 "Is atleast 90% of the phone storage free?","Removed unused apps or upgrade the storage"))
-            app=android.addSubNode(storeProb("I want to develop an app","Follow a tutorial",
+            app=android.addSubNode(storeProb("I want to develop an app","Follow a tutorial",None))
+            app.addSubNode(storeProb(
+                "Have you tried following a tutorial?",
+                "Use an online tutorial",
                 url="https://developer.android.com/training/basics/firstapp/index.html"))
 
             slow=apple.addSubNode(storeProb("My phone is slow",None))
-            slow.addSubNode(storeProb(
+            sl1=slow.addSubNode(storeProb(
                 "Has the phone been restarted recently?","Reboot the phone"))
-            slow.addSubNode(storeProb(
+            sl2=sl1.addSubNode(storeProb(
                 "Are there only a few apps open?","Close the apps you aren't actively using"))
-            slow.addSubNode(storeProb(
+            sl3=sl2.addSubNode(storeProb(
                 "Is atleast 90% of the phone storage free?","Removed unused apps or upgrade the storage"))
-            apple.addSubNode(storeProb("I want to develop an app","Follow a tutorial",
+            app=apple.addSubNode(storeProb("I want to develop an app","Follow a tutorial",None))
+            app.addSubNode(storeProb(
+                "Have you tried following a tutorial?",
+                "Use an online tutorial",
                 url="https://developer.apple.com/library/content/referencelibrary/GettingStarted/DevelopiOSAppsSwift/"))
+
 
             moto=android.addSubNode(storeCat("Motorola",type='part'))
             samsung=android.addSubNode(storeCat("Samsung", type='part'))
