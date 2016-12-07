@@ -229,12 +229,12 @@ def setupTree():
                 url="https://goo.gl/FJneX0"))
             wontCut = lawnmower.addSubNode(storeProb("Mower isn't cutting the grass well",None))
             wc1=wontCut.addSubNode(storeProb(
-                "Is the grass in your lawn particularly tall?",
+                "Is the grass a reasonable height?",
                 "Raise the cutting height on your lawn mower"
             ))
             wc2=wc1.addSubNode(storeProb(
-                "Does the blade appear to be worn or dull?",
-                "Sharpen the blade",
+                "Does the blade appear to be sharp?",
+                "Replace or sharpen the blade",
                 "https://goo.gl/ANuuah"
             ))
 
@@ -258,21 +258,21 @@ def setupTree():
 
             slow=android.addSubNode(storeProb("My phone is slow",None))
             slow.addSubNode(storeProb(
-                "Have you tried a reboot?","Reboot the phone"))
+                "Has the phone been restarted recently?","Reboot the phone"))
             slow.addSubNode(storeProb(
-                "Are there a lot of apps loaded?","Close the apps you aren't actively using"))
+                "Are there only a few apps open?","Close the apps you aren't actively using"))
             slow.addSubNode(storeProb(
-                "Is the phone out of storage space?","Removed unused apps or upgrade the storage"))
+                "Is atleast 90% of the phone storage free?","Removed unused apps or upgrade the storage"))
             app=android.addSubNode(storeProb("I want to develop an app","Follow a tutorial",
                 url="https://developer.android.com/training/basics/firstapp/index.html"))
 
             slow=apple.addSubNode(storeProb("My phone is slow",None))
             slow.addSubNode(storeProb(
-                "Have you tried a reboot?","Reboot the phone"))
+                "Has the phone been restarted recently?","Reboot the phone"))
             slow.addSubNode(storeProb(
-                "Are there a lot of apps loaded?","Close the apps you aren't actively using"))
+                "Are there only a few apps open?","Close the apps you aren't actively using"))
             slow.addSubNode(storeProb(
-                "Is the phone out of storage space?","Removed unused apps or upgrade the storage"))
+                "Is atleast 90% of the phone storage free?","Removed unused apps or upgrade the storage"))
             apple.addSubNode(storeProb("I want to develop an app","Follow a tutorial",
                 url="https://developer.apple.com/library/content/referencelibrary/GettingStarted/DevelopiOSAppsSwift/"))
 

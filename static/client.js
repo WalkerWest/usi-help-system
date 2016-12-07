@@ -239,7 +239,7 @@ helpApp.controller('HelpController',function HelpController($scope,$mdDialog,$ht
         );
     };
 
-    $scope.showSolution = function(ev,myObj) {
+    $scope.showSolutionOld = function(ev,myObj) {
         // Appending dialog to document.body to cover sidenav in docs app
         // Modal dialogs should fully cover application
         // to prevent interaction outside of dialog
@@ -261,6 +261,27 @@ helpApp.controller('HelpController',function HelpController($scope,$mdDialog,$ht
             .targetEvent(ev)
         );
     };
+
+    $scope.showSolution = function(ev,myObj) {
+        $mdDialog.show({
+          controller: DialogController,
+          templateUrl: '/static/solution.tmpl.html',
+          parent: angular.element(document.body),
+          targetEvent: ev,
+          clickOutsideToClose:true,
+          fullscreen: $scope.customFullscreen, // Only for -xs, -sm breakpoints.
+          locals: {
+            solution: myObj.solution,
+            url: myObj.url
+          }
+        })
+        .then(function(answer) {
+          $scope.status = 'You said the information was "' + answer + '".';
+        }, function() {
+          $scope.status = 'You cancelled the dialog.';
+        });
+    };
+
 
     $scope.showSurrender = function(ev) {
         // Appending dialog to document.body to cover sidenav in docs app
@@ -357,7 +378,7 @@ helpApp.controller('HelpController',function HelpController($scope,$mdDialog,$ht
         });
     };
 
-    function DialogController($scope, $mdDialog) {
+    function DialogController($scope, $mdDialog, solution, url) {
         $scope.hide = function() {
           $mdDialog.hide();
         };
@@ -367,6 +388,8 @@ helpApp.controller('HelpController',function HelpController($scope,$mdDialog,$ht
         $scope.answer = function(answer) {
           $mdDialog.hide(answer);
         };
+        $scope.solution = solution;
+        $scope.url = url;
     }
 
 });
