@@ -51,7 +51,7 @@
 
             <li><a  href="/logout">Logout</a></li>
           </ul>
-            <p style="float:right;line-height:3;color:white" ng-show="username!=null">You are logged in as {{username}}</p>
+            <p style="float:right;line-height:3;color:white" ng-show="username!=null">You are logged in as //username//</p>
         </div><!--/.nav-collapse -->
 
       </div>
@@ -88,12 +88,12 @@
         <form action="" method="post" name="formCat">
             <ol>
                 <span ng-repeat="cat in chosenCats">
-                    <li>{{cat.name}}</li>
+                    <li>//cat.name//</li>
                 </span>
                 <span ng-show="showCatDrop">
                 <li>
                     <select ng-model="category" ng-change="help.chooseCat()">
-                        <option ng-repeat="tree in trees" value="{{tree.id}}">{{tree.name}}</option>
+                        <option ng-repeat="tree in trees" value="//tree.id//">//tree.name//</option>
                     </select>
                 </li>
                 </span>
@@ -109,9 +109,9 @@
         <p align="center">&nbsp;&nbsp;</p>
         <form action="" method="post" name="post">
             <span ng-show="probStart && !partStart"><p align="center" style="color:#ff0000;">
-                <b>Solving a Problem</b> was chosen.</p></span>
+                <b>"Solving a Problem"</b> was chosen.</p></span>
             <span ng-show="partStart && !probStart"><p align="center" style="color:#ff0000;">
-                <b>Looking for a Part</b> was chosen.</p>
+                <b>"Looking for a Part"</b> was chosen.</p>
             </span>
             <span ng-show="partStart && probStart">
             <center>
@@ -139,23 +139,23 @@
             <ul style="list-style-type:none;">
                 <span ng-repeat="cat in chosenSubcats">
                     <li>
-                        <span ng-if="$first && !partStart"><b>Problem:</b> {{cat.name}}</span>
-                        <span ng-if="!$first && !partStart"><b>Q{{$index}}.</b>&nbsp;&nbsp;{{cat.name}}</span>
-                        <span ng-if="partStart">{{cat.name}}</span>
+                        <span ng-if="$first && !partStart"><b>Problem:</b> //cat.name//</span>
+                        <span ng-if="!$first && !partStart"><b>Q//$index//.</b>&nbsp;&nbsp;//cat.name//</span>
+                        <span ng-if="partStart">//cat.name//</span>
                     </li>
                 </span>
                 <span ng-show="showSubcatDrop">
                 <li><nobr>
-                    <span ng-show="!partStart && chosenSubcats.length>=1"><b>Q{{chosenSubcats.length}}.</b>&nbsp;</span>
+                    <span ng-show="!partStart && chosenSubcats.length>=1"><b>Q//chosenSubcats.length//.</b>&nbsp;</span>
                     <span ng-show="partStart || chosenSubcats.length==0">
                         <select ng-model="subcat" ng-change="help.chooseSubcat()">
-                            <option ng-repeat="child in children" value="{{child.id}}">
-                                {{child.name}}
+                            <option ng-repeat="child in children" value="//child.id//">
+                                //child.name//
                             </option>
                         </select>
                     </span>
                     <span ng-show="probStart && chosenSubcats.length>=1">
-                        {{children[0].name}}
+                        //children[0].name//
                         <input type="button" value="Yes" ng-click="help.chooseSubcat(children[0].id)">
                         <input type="button" value="No" ng-click="showSolution($event,children[0])">
                     </span>
@@ -198,7 +198,7 @@
 
       <div ng-if="status" id="status">
         <b layout="row" layout-align="center center" class="md-padding">
-          {{status}}
+          //status//
         </b>
       </div>
 

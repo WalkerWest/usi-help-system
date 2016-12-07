@@ -7,9 +7,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootst/usr/lib/googleAppSDK/google_appenginerapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.9/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.9/angular-animate.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.9/angular-aria.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.1/angular-material.min.js"></script>
+  <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.css">
+  <script src="/static/client.js"></script>
+
 </head>
-<body style="margin:3%;background-color:#dcdcdc">
+<body style="background-color:#dcdcdc">
 <!-- fixing github -->
 <br/>
 <nav class="navbar navbar-inverse navbar-fixed-top">
@@ -47,22 +54,8 @@
         </div><!--/.nav-collapse -->
 
       </div>
-    </nav>
-
-<!--
-<div>USI Help System:
-    <a href="{{url_for('index')}}">Home</a>
-    <a href="/about">About Us</a>
-    <a href="/form">Contact Us</a>
-    <a href="/register">Register</a>
-    <a href="/login">Login</a>
-    <a href="/logout">Logout</a>
-    {% if 'username' in session %}
-    <p>You are logged in as {{ session['username'] }}</p>
-    {% endif %}
-</div>
--->
-<hr>
+</nav>
+<br/><br/><br/>
 
 {% with messages = get_flashed_messages() %}
   {% if messages %}

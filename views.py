@@ -26,7 +26,7 @@ def storeProb(myProb, myAns, url=""):
     myProb2.put()
     return myProb2
 
-@app.route('/',methods=['GET','POST'])
+@app.route('/test',methods=['GET','POST'])
 def index():
     global catList
     global probList
@@ -46,8 +46,11 @@ def index():
             del roots[:]
             for thing in myObj.returnRootChildren():
                 roots.append(thing)
-    # return render_template("wwindex.html",roots=roots)
-    return redirect("static/wwindex.html")
+    return render_template("index.html",roots=roots)
+    # return redirect("static/wwindex.html")
+    # return render_template("newindex.html")
+    # return redirect("/template/newindex.html")
+
 
 @app.route('/_getUser')
 def get_user():
@@ -224,7 +227,7 @@ def setupTree():
             ws1=wontStart.addSubNode(storeProb("Is there gas in the tank?","Put gas in the mower!"))
             ws2=ws1.addSubNode(storeProb("Will the mower jump start?","Replace the battery!"))
             ws3=ws2.addSubNode(storeProb(
-                "Are the spark plugs appear clean?",
+                "Do the spark plugs appear clean?",
                 "Clear or replace the plugs!",
                 url="https://goo.gl/FJneX0"))
             wontCut = lawnmower.addSubNode(storeProb("Mower isn't cutting the grass well",None))

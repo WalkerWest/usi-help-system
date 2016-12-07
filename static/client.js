@@ -166,7 +166,7 @@ helpApp.controller('HelpController',function HelpController($scope,$mdDialog,$ht
         });
     }
 
-    $scope.username = this.getUser();
+    //$scope.username = this.getUser();
 
     this.openCreateCat = function() {
         console.log("Opening createCat");
@@ -214,7 +214,6 @@ helpApp.controller('HelpController',function HelpController($scope,$mdDialog,$ht
         }
         $scope.children=newArr;
     }
-
 
     /***************************************************************************
      * DIALOG STUFF                                                            *
@@ -393,3 +392,7 @@ helpApp.controller('HelpController',function HelpController($scope,$mdDialog,$ht
     }
 
 });
+
+helpApp.config(function($interpolateProvider) {
+    $interpolateProvider.startSymbol('//').endSymbol('//');
+})
