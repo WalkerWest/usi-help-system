@@ -123,7 +123,20 @@ helpApp.controller('HelpController',function HelpController($scope,$mdDialog,$ht
                 params: {id:myId}
             }).then(function successCallback(response) {
                 console.log("Got subcat children!");
-
+                console.log("The subcat length is "+response.data.length)
+                if(response.data.length==0) {
+                    console.log("Turning off the subcat drop!");
+                    $scope.showSubcatDrop=false;
+                    if($scope.probStart)$scope.showSurrender();
+                    else {
+                        for (var i in $scope.children) {
+                            if($scope.children[i].id==myId) {
+                                $scope.showPartBox($scope.children[i]);
+                            }
+                        }
+                    }
+                    //$scope.$apply();
+                }
                 for (var i in $scope.children) {
                     if($scope.children[i].id==myId) {
                         $scope.chosenSubcats.push({id:myId,name:$scope.children[i].name});
@@ -135,20 +148,13 @@ helpApp.controller('HelpController',function HelpController($scope,$mdDialog,$ht
                     console.log(subcat.name)
                     $scope.children.push(subcat);
                 })
-                console.log("The subcat length is "+response.data.length)
-                if(response.data.length==0) {
-                    console.log("Turning off the subcat drop!");
-                    $scope.showSubcatDrop=false;
-                    $scope.showSurrender();
-                    //$scope.$apply();
-                }
+
             },function errorCallback(response) {
                 console.log("error:",response);
             });
 
         }
     }
-
 
     this.showSubcats = false;
 
@@ -271,7 +277,8 @@ helpApp.controller('HelpController',function HelpController($scope,$mdDialog,$ht
           fullscreen: $scope.customFullscreen, // Only for -xs, -sm breakpoints.
           locals: {
             solution: myObj.solution,
-            url: myObj.url
+            url: myObj.url,
+            part: null
           }
         })
         .then(function(answer) {
@@ -280,7 +287,6 @@ helpApp.controller('HelpController',function HelpController($scope,$mdDialog,$ht
           $scope.status = 'You cancelled the dialog.';
         });
     };
-
 
     $scope.showSurrender = function(ev) {
         // Appending dialog to document.body to cover sidenav in docs app
@@ -298,7 +304,26 @@ helpApp.controller('HelpController',function HelpController($scope,$mdDialog,$ht
         );
     };
 
-
+    $scope.showPartBox = function(/*ev,*/myObj) {
+        $mdDialog.show({
+          controller: DialogController,
+          templateUrl: '/static/part.tmpl.html',
+          parent: angular.element(document.body),
+          //targetEvent: ev,
+          clickOutsideToClose:true,
+          fullscreen: $scope.customFullscreen, // Only for -xs, -sm breakpoints.
+          locals: {
+            solution: null,
+            url: null,
+            part: myObj
+          }
+        })
+        .then(function(answer) {
+          $scope.status = 'You said the information was "' + answer + '".';
+        }, function() {
+          $scope.status = 'You cancelled the dialog.';
+        });
+    };
 
     $scope.showConfirm = function(ev) {
         // Appending dialog to document.body to cover sidenav in docs app
@@ -377,7 +402,7 @@ helpApp.controller('HelpController',function HelpController($scope,$mdDialog,$ht
         });
     };
 
-    function DialogController($scope, $mdDialog, solution, url) {
+    function DialogController($scope, $mdDialog, solution, url, part) {
         $scope.hide = function() {
           $mdDialog.hide();
         };
@@ -389,6 +414,7 @@ helpApp.controller('HelpController',function HelpController($scope,$mdDialog,$ht
         };
         $scope.solution = solution;
         $scope.url = url;
+        $scope.part = part;
     }
 
 });

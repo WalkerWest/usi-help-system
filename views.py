@@ -97,6 +97,7 @@ def get_children():
             if hasattr(node.payload,'name'):
                 returnDict['name']=node.payload.name
                 returnDict['type']=node.payload.type
+                returnDict['url'] = node.payload.url
             elif hasattr(node.payload,'problem') and node.payload.problem!=None and node.payload.problem!="":
                 returnDict['name'] = node.payload.problem
                 returnDict['type'] = "problem"
