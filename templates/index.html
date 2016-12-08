@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
+
 <div ng-app="helpApp" ng-cloak>
 <div ng-controller="HelpController as help" class="md-padding" id="popupContainer">
 
@@ -26,20 +27,23 @@
         <p align="center"><b>Use category drilldown to narrow search ... </b></p>
         <p align="center">&nbsp;
             <span ng-show="chosenCats.length>0">
-            [ <a ng-show="chosenCats.length>0" ng-click="help.resetCats()">Reset</a> ]
+            [
+                <a ng-show="chosenCats.length>0" ng-click="help.resetCats()">Reset</a>
+                    | <a ng-click="showAddRoot()">Add Root</a>
+            ]
             </span>&nbsp;
         </p>
         <form action="" method="post" name="formCat">
             <ol>
                 <span ng-repeat="cat in chosenCats">
-                    <li>//cat.name// [ <a ng-click="showAddSubcat($event,cat.id)">Add Subcat</a> ]</li>
+                    <li>//cat.name// [ <a ng-click="showAddSubcat($event,cat.id)">Add Child</a> ]</li>
                 </span>
                 <span ng-show="showCatDrop">
                 <li>
                     <select ng-model="category" ng-change="help.chooseCat()">
                         <option ng-repeat="tree in trees" value="//tree.id//">//tree.name//</option>
                     </select>
-                    [ <a ng-click="showAddRoot()">Add Root</a> ]
+                    <span ng-show="chosenCats.length==0">[ <a ng-click="showAddRoot()">Add Root</a> ]</span>
                 </li>
                 </span>
             </ol>
@@ -76,7 +80,12 @@
         <p align="center" ng-show="partStart && !probStart"><b>... continue drilling to find your part!</b></p>
         <p align="center">&nbsp;
             <span ng-show="chosenCats.length>0">
-            [ <a ng-show="chosenCats.length>0" ng-click="help.resetCats()">Reset</a> ]
+            [
+                <a ng-show="chosenCats.length>0" ng-click="help.resetCats()">Reset</a>
+                <span ng-show="probStart && chosenSubcats.length>0">
+                    | <a ng-click="addSolution($event)">Add Solution Alt.</a>
+                </span>
+            ]
             </span>&nbsp;
         </p>
 
@@ -84,9 +93,13 @@
             <ul style="list-style-type:none;">
                 <span ng-repeat="cat in chosenSubcats">
                     <li>
-                        <span ng-if="$first && !partStart"><b>Problem:</b> //cat.name//</span>
+                        <span ng-if="$first && !partStart">
+                            <b>Problem:</b> //cat.name//
+                        </span>
                         <span ng-if="!$first && !partStart"><b>Q//$index//.</b>&nbsp;&nbsp;//cat.name//</span>
-                        <span ng-if="partStart">//cat.name//</span>
+                        <span ng-if="partStart">
+                            //cat.name// [ <a ng-click="showAddSubcat($event,cat.id)">Add Child</a> ]
+                        </span>
                     </li>
                 </span>
                 <span ng-show="showSubcatDrop">

@@ -116,6 +116,72 @@ def get_children():
         print "Could not find the root node."
     return jsonify(returnList)
 
+@app.route('/_getDistantProgeny')
+def get_distant_pregeny():
+    returnList=[]
+    myNode=None
+    print "The length of catList is "+str(len(catList))
+    for problem in probList:
+        if str(request.args.get("id")) == str(problem.id):
+            myNode = problem
+            print "Found problem " + problem.problem + " / " + problem.solution
+            break
+    if(myNode==None):
+        for category in catList:
+            if str(request.args.get("id")) == str(category.id):
+                myNode = category
+                print "Found category " + category.name
+                break
+    baseNode=None
+    for tree in roots:
+        print tree
+        baseNode=tree.lookup(str(request.args.get("id")))
+        if baseNode!=None: break
+    return jsonify({'id':baseNode.returnDistantProgeny().id})
+
+@app.route('/_getAllowedChildTypes')
+def get_allowed_child_types():
+    returnList=[]
+    myNode=None
+    print "The length of catList is "+str(len(catList))
+    for category in catList:
+        print category
+        if str(request.args.get("parentId"))==str(category.id):
+            myNode=category
+            print "Found category "+category.name
+            break
+    if(myNode==None):
+        for problem in probList:
+            print problem
+            if str(request.args.get("parentId")) == str(problem.id):
+                myNode = problem
+                print "Found problem " + problem.problem + " / " + problem.solution
+                break
+    baseNode=None
+    print "Looking up "+str(request.args.get("parentId"))
+    for tree in roots:
+        print tree
+        baseNode=tree.lookup(str(request.args.get("parentId")))
+        if baseNode!=None: break
+
+    childTypes = []
+    if baseNode!=None:
+        childTypes = [{'name':'Subcategory'}, {'name':'Problem'}, {'name':'Part'}]
+        if hasattr(baseNode.payload,'type') and baseNode.payload.type == 'part':
+            childTypes = [{'name':'Part'}]
+        else:
+            for node in baseNode.returnRootChildren():
+                if hasattr(node.payload,'type') and node.payload.type=='category':
+                    childTypes = [{'name':'Subcategory'}]
+                elif hasattr(node.payload,'type') and node.payload.type == 'part':
+                    childTypes = [{'name':'Problem'},{'name':'Part'}]
+                elif hasattr(node.problem,'problem'):
+                    childTypes = [{'name':'Problem'},{'name':'Part'}]
+                break
+    else:
+        print "Could not find the root node."
+    return jsonify(childTypes)
+
 @app.route('/form')
 def form():
     return render_template('form.html')
@@ -231,38 +297,52 @@ def create_root():
 @app.route('/_createSubcat')
 def create_subcat():
     newObj = {}
-    if request.args.get("type")=='Subcategory':
+    print "The args of createSubcat are "+str(request.args)
+    if request.args.get("type")=='Subcategory' or request.args.get("type")=='Part' or \
+                    request.args.get("type")=='Problem' or request.args.get("type")=='Solution':
         print "I will make a node!"
-        baseNode = None
         print "Looking up " + str(request.args.get("parentId"))
         for tree in roots:
             baseNode = tree.lookup(str(request.args.get("parentId")))
             if baseNode != None:
-                #print "There were " + str(len(Tree.query().fetch(None))) + " tree entries."
-                print "There were " + str(len(Category.query().fetch(None))) + " category entries."
-                newCat=storeCat(request.args.get("name"))
+                newCat=None
+                if request.args.get("type")=='Part':
+                    print "There were " + str(len(Category.query().fetch(None))) + " category entries."
+                    newCat=storeCat(request.args.get("name"),type='part',url=request.args.get("url"))
+                    newObj={'id':newCat.id,'name':newCat.name,'type':newCat.type,'url':newCat.url}
+                    print "Now there are " + str(len(Category.query().fetch(None))) + " category entries."
+                elif request.args.get("type") == 'Problem' or request.args.get("type") == 'Solution':
+                    print "There were " + str(len(Problem.query().fetch(None))) + " problem entries."
+                    # if len(request.args.get("solution"))>0:
+                    #     newCat = storeProb(request.args.get("problem"),request.args.get("solution"),
+                    #         url=request.args.get("url"))
+                    #     newObj = {'id': newCat.id, 'name': newCat.problem, 'type': 'solution', 'url': newCat.url}
+                    # else:
+                    #     newCat = storeProb(request.args.get("problem"),None)
+                    #     newObj = {'id': newCat.id, 'name': newCat.problem, 'type': 'problem', 'url': newCat.url}
+                    newCat = storeProb(request.args.get("problem"), request.args.get("solution"),
+                        url=request.args.get("url"))
+                    newObj = {'id': newCat.id, 'name': newCat.problem, 'solution': newCat.solution,
+                              'type': 'problem', 'url': newCat.url}
+                    print "Now there are " + str(len(Problem.query().fetch(None))) + " problem entries."
+                else:
+                    print "There were " + str(len(Category.query().fetch(None))) + " category entries."
+                    newCat = storeCat(request.args.get("name"))
+                    newObj = {'id': newCat.id, 'name': newCat.name, 'type': newCat.type, 'url': newCat.url}
+                    print "Now there are " + str(len(Category.query().fetch(None))) + " category entries."
                 baseNode.addSubNode(newCat)
-                newObj={'id':newCat.id,'name':newCat.name,'type':newCat.type,'url':newCat.url}
-
-                # trees = Tree.query()  # get item list
-                # for tree in trees:  # find correct item
-                #     roots.append(Node(ast.literal_eval(tree.tree)))
-
-                trees = Tree.query()  # get item list
-                for mytree in trees:  # find correct item
+                trees = Tree.query()
+                for mytree in trees:
                     treeDict=ast.literal_eval(mytree.tree)
-                    #print treeDict['node']
                     if str(treeDict['node'])==str(tree.payload.id):
                         print "Found match!"
-                        # Tree(tree=str(myRoot.convertTree())).put()
                         mytree.tree=str(tree.convertTree())
                         mytree.put()
                         break
                 print "Now there are " + str(len(Tree.query().fetch(None))) + " tree entries."
-                print "Now there are " + str(len(Category.query().fetch(None))) + " category entries."
                 break
-        else:
-            print "Parent node could not be found!"
+            else:
+                print "Parent node could not be found!"
     return jsonify(newObj)
 
     # myRoot = Node(storeCat(request.args.get("name")))

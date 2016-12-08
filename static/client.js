@@ -188,10 +188,11 @@ helpApp.controller('HelpController',function HelpController($scope,$mdDialog,$ht
         $http({
             url: "/_createSubcat",
             method: "GET",
-            params: {subcat:myObj}
+            params: myObj
         }).then(function successCallback(response) {
             //paintTree(response);
             console.log("I'm back!");
+            resetCategories();
         },function errorCallback(response) {
             console.log("error:",response);
         });
@@ -218,7 +219,11 @@ helpApp.controller('HelpController',function HelpController($scope,$mdDialog,$ht
         $dialog.dialog({}).open('');
     }
 
-    this.resetCats = function() {
+    this.resetCats = function () {
+        resetCategories();
+    }
+
+    function resetCategories() {
         console.log("Reset button pushed!");
         $scope.chosenCats.length=0;
         $scope.chosenSubcats.length=0;
@@ -318,7 +323,8 @@ helpApp.controller('HelpController',function HelpController($scope,$mdDialog,$ht
             solution: myObj.solution,
             url: myObj.url,
             part: null,
-            parentId: null
+            parentId: null,
+            allowedTypes: null
           }
         })
         .then(function(answer) {
@@ -356,7 +362,8 @@ helpApp.controller('HelpController',function HelpController($scope,$mdDialog,$ht
             solution: null,
             url: null,
             part: myObj,
-            parentId: null
+            parentId: null,
+            allowedTypes: null
           }
         })
         .then(function(answer) {
@@ -463,24 +470,81 @@ helpApp.controller('HelpController',function HelpController($scope,$mdDialog,$ht
         });
     };
 
-    function DialogController($scope, $mdDialog, solution, url, part, parentId) {
-        $scope.hide = function() {
-          $mdDialog.hide();
-        };
-        $scope.cancel = function() {
-          $mdDialog.cancel();
-        };
-        $scope.answer = function(answer) {
-          $mdDialog.hide(answer);
-        };
-        $scope.solution = solution;
-        $scope.url = url;
-        $scope.part = part;
-        $scope.parentId = parentId;
+    $scope.addSolution = function(ev) {
+        console.log("Adding an alternative solution ...");
+        $http({
+            url: "/_getDistantProgeny",
+            method: "GET",
+            params: {id:$scope.chosenSubcats[0].id}
+        }).then(function successCallback(response) {
+            console.log("I found the most distant progeny!");
+            console.log($scope.chosenSubcats[0].id+" is my GUID");
+            console.log(response.data.id          +" is the progeny GUID");
+            $scope.showAddSubcat(ev,response.data.id,[{'name':'Solution'}]);
+        },function errorCallback(response) {
+            console.log("error:",response);
+        });
     }
 
-    $scope.showAddSubcat = function(ev,parentId) {
-        //console.log(ev); console.log(parentId);
+    function showSubcatBox(ev,parentId,allowedTypes) {
+        $mdDialog.show({
+          locals: {
+            allowedTypes: allowedTypes,
+            solution: null,
+            url: null,
+            part: null,
+            problem:null,
+            parentId: parentId
+          },
+          controller: DialogController,
+          templateUrl: '/static/addSubcat.tmpl.html',
+          parent: angular.element(document.body),
+          //targetEvent: ev,
+          clickOutsideToClose:true,
+          fullscreen: $scope.customFullscreen, // Only for -xs, -sm breakpoints.
+        })
+        .then(function(subcat) {
+            if(subcat.hasOwnProperty('type') && (subcat.type=='Subcategory' || subcat.type=='Part') &&
+                    subcat.hasOwnProperty('name') && subcat.name.length>0) {
+                console.log ('You said the information was "' + subcat.name + '".');
+                $scope.createSubcat(subcat);
+            } else if(subcat.hasOwnProperty('type') && (subcat.type=='Problem' || subcat.type=='Solution') &&
+                        subcat.hasOwnProperty('problem') && subcat.problem.length>0) {
+                if ((subcat.type=='Solution' && subcat.hasOwnProperty('solution') && subcat.solution.length>0) ||
+                        subcat.type=='Problem') {
+                    console.log ('You said the information was "' + subcat.problem + '".');
+                    $scope.createSubcat(subcat);
+                }
+                else console.log('Either the problem or solution was not entered');
+            } else console.log('No subcat name was entered!');
+        }, function() {
+          console.log ('You cancelled the dialog.');
+        });
+    }
+
+    $scope.showAddSubcat = function(ev,parentId,allowedTypes) {
+        allowedTypes = allowedTypes || []
+        if (allowedTypes.length==0) {
+            $http({
+                url: "/_getAllowedChildTypes",
+                method: "GET",
+                params: {parentId:parentId}
+            }).then(function successCallback(response) {
+                // Get the allowed types
+                console.log("I have my list of allowed types!");
+                allowedTypes=response.data;
+                for(var i in allowedTypes) {
+                    console.log(allowedTypes[i].name);
+                }
+                // Display the dialog box
+                showSubcatBox(ev,parentId,allowedTypes);
+            },function errorCallback(response) {
+                console.log("error:",response);
+            });
+        }
+        else showSubcatBox(ev,parentId,allowedTypes);
+
+        /*
         $mdDialog.show({
           controller: DialogController,
           templateUrl: '/static/addSubcat.tmpl.html',
@@ -496,8 +560,13 @@ helpApp.controller('HelpController',function HelpController($scope,$mdDialog,$ht
           }
         })
         .then(function(subcat) {
-            if(subcat.name.length>0) {
+            if(subcat.hasOwnProperty('type') && (subcat.type=='Subcategory' || subcat.type=='Part') &&
+                    subcat.hasOwnProperty('name') && subcat.name.length>0) {
                 console.log ('You said the information was "' + subcat.name + '".');
+                $scope.createSubcat(subcat);
+            } else if(subcat.hasOwnProperty('type') && (subcat.type=='Problem') &&
+                    subcat.hasOwnProperty('problem') && subcat.problem.length>0) {
+                console.log ('You said the information was "' + subcat.problem + '".');
                 $scope.createSubcat(subcat);
             } else {
                 console.log('No subcat name was entered!');
@@ -505,19 +574,49 @@ helpApp.controller('HelpController',function HelpController($scope,$mdDialog,$ht
         }, function() {
           console.log ('You cancelled the dialog.');
         });
+        */
     };
+
+    function DialogController($scope, $mdDialog, solution, url, part, parentId,allowedTypes) {
+        $scope.hide = function() {
+          $mdDialog.hide();
+        };
+        $scope.cancel = function() {
+          $mdDialog.cancel();
+        };
+        $scope.answer = function(answer) {
+          $mdDialog.hide(answer);
+        };
+        $scope.solution = solution;
+        $scope.url = url;
+        $scope.part = part;
+        $scope.parentId = parentId;
+        $scope.allowedTypes = allowedTypes;
+    }
+
 });
 
-helpApp.controller('AddSubcatController',function ($scope) {
+helpApp.controller('AddSubcatController',function ($scope,$mdDialog) {
+        //allowedTypes = allowedTypes || [];
+        console.log('In the dialog controller!');
+        console.log($scope);
         $scope.subcat = {
             name: '',
             type: '',
-            parentId: $scope.parentId
+            parentId: $scope.parentId,
+            url: '',
+            problem: '',
+            solution: '',
+            allowedTypes: $scope.allowedTypes
         }
+        /*
         $scope.catTypes =('Subcategory Part Problem').split(' ').map(function(catType) {
             return {name: catType};
         });
-        $scope.answser = function (answer) {
+        */
+        /*
+        $scope.answer = function (answer) {
             console.log(answer);
         };
+        */
 });

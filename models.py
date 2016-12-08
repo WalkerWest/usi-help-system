@@ -183,6 +183,10 @@ class Node(ndb.Model):
             myNode=myNode.rgt
         return myKids
 
+    def returnDistantProgeny(self):
+        if self.lft==None:  return self
+        else: return self.lft.returnDistantProgeny()
+
     def spaceMe(self,scount):
         spaceStr = ""
         while scount > 0:
@@ -268,7 +272,8 @@ class Node(ndb.Model):
                 # self.convertTree(myNode.rgt, scount)
 
 class Tree(ndb.Model):
-    tree = ndb.StringProperty()
+    # Another interesting bug: BadValueError: Indexed value tree must be at most 1500 bytes [was StringProperty()]
+    tree = ndb.TextProperty()
 
     def __init__(self,*args,**kwargs):
         super(Tree, self).__init__(*args, **kwargs)

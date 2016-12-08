@@ -1,6 +1,6 @@
-<div ng-controller="AddSubcatController" layout="column" class="md-inline-form">
+<div ng-controller="AddSubcatController" layout="column" class="md-inline-form" flex="50">
 
-<md-dialog aria-label="Add Subcategory">
+<md-dialog aria-label="Add Subcategory" flex="80">
 
   <form ng-cloak>
     <md-toolbar>
@@ -16,27 +16,57 @@
     <md-content layout-padding>
 
       <div layout-gt-xs="row">
-        <md-input-container class="md-block" flex-gt-sm>
-          <label>Parent GUID (Disabled)</label>
-          <input ng-model="subcat.parentId">
-        </md-input-container>
-      </div>
+        <div flex="50">
 
-      <div layout-gt-xs="row">
-        <md-input-container class="md-block" flex-gt-sm>
-          <label>Subcategory Name</label>
-          <input ng-model="subcat.name">
-        </md-input-container>
-      </div>
+          <md-input-container class="md-block" flex-gt-sm>
+            <label>Parent GUID (Disabled)</label>
+            <input ng-model="subcat.parentId" disabled>
+          </md-input-container>
 
-      <md-input-container class="md-block" flex-gt-sm>
-        <label>Type</label>
-        <md-select ng-model="subcat.type">
-          <md-option ng-repeat="type in catTypes" value="//type.name//">
-            //type.name//
-          </md-option>
-        </md-select>
-      </md-input-container>
+          <!--catTypes-->
+          <md-input-container class="md-block" flex-gt-sm>
+            <label>Type</label>
+            <md-select ng-model="subcat.type">
+              <md-option ng-repeat="type in subcat.allowedTypes" value="//type.name//">
+                //type.name//
+              </md-option>
+            </md-select>
+          </md-input-container>
+
+          <md-input-container class="md-block" flex-gt-sm ng-show="subcat.type=='Subcategory'">
+            <label>Subcategory Name</label>
+            <input ng-model="subcat.name">
+          </md-input-container>
+
+          <md-input-container class="md-block" flex-gt-sm ng-show="subcat.type=='Part'">
+            <label>Part Name</label>
+            <input ng-model="subcat.name">
+          </md-input-container>
+
+        </div>
+        <div flex="50">
+          <md-input-container class="md-block" flex-gt-sm ng-show="subcat.type=='Problem'">
+            <label>Problem</label>
+            <input ng-model="subcat.problem">
+          </md-input-container>
+
+          <md-input-container class="md-block" flex-gt-sm ng-show="subcat.type=='Solution'">
+            <label>Yes or No Question</label>
+            <input ng-model="subcat.problem">
+          </md-input-container>
+
+          <md-input-container class="md-block" flex-gt-sm ng-show="subcat.type=='Solution'">
+            <label>If No, problem solve; do ...</label>
+            <input ng-model="subcat.solution">
+          </md-input-container>
+
+          <md-input-container class="md-block" flex-gt-sm ng-show="subcat.type=='Part' || subcat.type=='Solution'">
+            <label>Informational URL</label>
+            <input ng-model="subcat.url">
+          </md-input-container>
+
+        </div>
+      </div>
 
     </md-content>
 
