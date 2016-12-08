@@ -12,7 +12,7 @@
     <option name="ADD_SOURCE_ROOTS" value="true" />
     <module name="usi-help-system" />
     <option name="SCRIPT_NAME" value="$PROJECT_DIR$/../../GAE/dev_appserver.py" />
-    <option name="PARAMETERS" value="--datastore_consistency_policy=consistent --automatic_restart=no --max_module_instances=&quot;default:1&quot; ." />
+    <option name="PARAMETERS" value="--datastore_consistency_policy=consistent --automatic_restart=no --max_module_instances=&quot;default:1&quot; --datastore_path=myapp.datastore ." />
     <option name="SHOW_COMMAND_LINE" value="false" />
     <method />
   </configuration>

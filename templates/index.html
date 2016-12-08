@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-<div ng-app="helpApp">
+<div ng-app="helpApp" ng-cloak>
 <div ng-controller="HelpController as help" class="md-padding" id="popupContainer">
 
 <div class="container">
@@ -32,13 +32,14 @@
         <form action="" method="post" name="formCat">
             <ol>
                 <span ng-repeat="cat in chosenCats">
-                    <li>//cat.name//</li>
+                    <li>//cat.name// [ <a ng-click="showAddSubcat($event,cat.id)">Add Subcat</a> ]</li>
                 </span>
                 <span ng-show="showCatDrop">
                 <li>
                     <select ng-model="category" ng-change="help.chooseCat()">
                         <option ng-repeat="tree in trees" value="//tree.id//">//tree.name//</option>
                     </select>
+                    [ <a ng-click="showAddRoot()">Add Root</a> ]
                 </li>
                 </span>
             </ol>

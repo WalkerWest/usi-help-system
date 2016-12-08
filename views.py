@@ -1,3 +1,8 @@
+import thread
+from google.appengine.api import datastore_errors
+from google.appengine.ext import db
+from google.appengine.runtime import apiproxy_errors
+
 from main import app
 from flask import render_template,flash,redirect,url_for,g,request,session,jsonify
 from models import Item, UserClass, Contact, Category, Problem, Node, Tree
@@ -26,7 +31,7 @@ def storeProb(myProb, myAns, url=""):
     myProb2.put()
     return myProb2
 
-@app.route('/test',methods=['GET','POST'])
+@app.route('/',methods=['GET','POST'])
 def index():
     global catList
     global probList
@@ -214,6 +219,59 @@ def registersub():
     return render_template('registersubmitted.html',
                             username=username)
 
+@app.route('/_createRoot')
+def create_root():
+    myRoot = Node(storeCat(request.args.get("name")))
+    roots.append(myRoot)
+    print "There were "+str(len(Tree.query().fetch(None)))+" entries."
+    Tree(tree=str(myRoot.convertTree())).put()
+    print "Now there are "+str(len(Tree.query().fetch(None)))+" entries."
+    return get_tree()
+
+@app.route('/_createSubcat')
+def create_subcat():
+    newObj = {}
+    if request.args.get("type")=='Subcategory':
+        print "I will make a node!"
+        baseNode = None
+        print "Looking up " + str(request.args.get("parentId"))
+        for tree in roots:
+            baseNode = tree.lookup(str(request.args.get("parentId")))
+            if baseNode != None:
+                #print "There were " + str(len(Tree.query().fetch(None))) + " tree entries."
+                print "There were " + str(len(Category.query().fetch(None))) + " category entries."
+                newCat=storeCat(request.args.get("name"))
+                baseNode.addSubNode(newCat)
+                newObj={'id':newCat.id,'name':newCat.name,'type':newCat.type,'url':newCat.url}
+
+                # trees = Tree.query()  # get item list
+                # for tree in trees:  # find correct item
+                #     roots.append(Node(ast.literal_eval(tree.tree)))
+
+                trees = Tree.query()  # get item list
+                for mytree in trees:  # find correct item
+                    treeDict=ast.literal_eval(mytree.tree)
+                    #print treeDict['node']
+                    if str(treeDict['node'])==str(tree.payload.id):
+                        print "Found match!"
+                        # Tree(tree=str(myRoot.convertTree())).put()
+                        mytree.tree=str(tree.convertTree())
+                        mytree.put()
+                        break
+                print "Now there are " + str(len(Tree.query().fetch(None))) + " tree entries."
+                print "Now there are " + str(len(Category.query().fetch(None))) + " category entries."
+                break
+        else:
+            print "Parent node could not be found!"
+    return jsonify(newObj)
+
+    # myRoot = Node(storeCat(request.args.get("name")))
+    # roots.append(myRoot)
+    # print "There were "+str(len(Tree.query().fetch(None)))+" entries."
+    # Tree(tree=str(myRoot.convertTree())).put()
+    # print "Now there are "+str(len(Tree.query().fetch(None)))+" entries."
+    # return get_tree()
+
 def setupTree():
     if len(roots) == 0:
         metaData = Tree.query()
@@ -316,5 +374,7 @@ def setupTree():
             trees = Tree.query()  # get item list
             for tree in trees:  # find correct item
                 roots.append(Node(ast.literal_eval(tree.tree)))
+            for root in roots:
+                root.printTree();
             print "Length of probList is " + str(len(probList))
             print "Length of catList is " + str(len(catList))

@@ -135,11 +135,15 @@ class Node(ndb.Model):
         super(Node, self).__init__(*args, **kwargs)
         if isinstance(payload, types.DictionaryType):
             # treeDict=ast.literal_eval(payload)
-            myLft = self.parseNode(payload['lft'])
+            if 'lft' in payload:
+                myLft = self.parseNode(payload['lft'])
+                self.lft = myLft
+            else:
+                # print payload['lft']
+                self.lft = None
             self.id = str(payload['node'])
             self.payload = self.getObj(payload['node'])
             # payload.put()
-            self.lft = myLft
             self.rgt = None
         else:
             # Very interesting bug (2016-12-05 WW)

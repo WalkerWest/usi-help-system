@@ -3,6 +3,11 @@
 //angular.module('helpApp',['ngAnimate','ngSanitize','ui.bootstrap','ngMaterial']);
 angular.module('helpApp',['ngMaterial']);
 var helpApp=angular.module('helpApp');
+
+helpApp.config(function($interpolateProvider) {
+    $interpolateProvider.startSymbol('//').endSymbol('//');
+})
+
 helpApp.controller('HelpController',function HelpController($scope,$mdDialog,$http) {
 
     /*
@@ -23,23 +28,26 @@ helpApp.controller('HelpController',function HelpController($scope,$mdDialog,$ht
 
     getTrees();
 
+    function paintTree(response) {
+        console.log("Got data!");
+        $scope.trees.length=0;
+        $scope.trees.push({ id: '0', name: ''})
+        $scope.category=$scope.trees[0].id;
+        response.data.forEach(function(tree) {
+            console.log(tree.name)
+            $scope.trees.push(tree);
+        })
+        //$scope.$apply();
+    }
+
     function getTrees() {
         $http({
             url: "/_getTrees",
             method: "GET"
         }).then(function successCallback(response) {
-                console.log("Got data!");
-                $scope.trees.length=0;
-                $scope.trees.push({ id: '0', name: ''})
-                $scope.category=$scope.trees[0].id;
-                response.data.forEach(function(tree) {
-                    console.log(tree.name)
-                    $scope.trees.push(tree);
-                })
-                //$scope.$apply();
-
+            paintTree(response);
         },function errorCallback(response) {
-                console.log("error:",response);
+            console.log("error:",response);
         });
     }
 
@@ -157,6 +165,37 @@ helpApp.controller('HelpController',function HelpController($scope,$mdDialog,$ht
     }
 
     this.showSubcats = false;
+
+    $scope.createRoot = function(myName) {
+        if(myName==null)
+            console.log("No value passed!");
+        else {
+            console.log("Preparing to make a root for: "+myName);
+            $http({
+                url: "/_createRoot",
+                method: "GET",
+                params: {name:myName}
+            }).then(function successCallback(response) {
+                paintTree(response);
+            },function errorCallback(response) {
+                console.log("error:",response);
+            });
+        }
+    }
+
+    $scope.createSubcat = function(myObj) {
+        console.log("Preparing to make a subcat for: "+myObj.name);
+        $http({
+            url: "/_createSubcat",
+            method: "GET",
+            params: {subcat:myObj}
+        }).then(function successCallback(response) {
+            //paintTree(response);
+            console.log("I'm back!");
+        },function errorCallback(response) {
+            console.log("error:",response);
+        });
+    }
 
     this.getUser = function() {
         console.log($scope.category);
@@ -278,7 +317,8 @@ helpApp.controller('HelpController',function HelpController($scope,$mdDialog,$ht
           locals: {
             solution: myObj.solution,
             url: myObj.url,
-            part: null
+            part: null,
+            parentId: null
           }
         })
         .then(function(answer) {
@@ -315,7 +355,8 @@ helpApp.controller('HelpController',function HelpController($scope,$mdDialog,$ht
           locals: {
             solution: null,
             url: null,
-            part: myObj
+            part: myObj,
+            parentId: null
           }
         })
         .then(function(answer) {
@@ -339,6 +380,26 @@ helpApp.controller('HelpController',function HelpController($scope,$mdDialog,$ht
           $scope.status = 'You decided to get rid of your debt.';
         }, function() {
           $scope.status = 'You decided to keep your debt.';
+        });
+    };
+
+    $scope.showAddRoot = function(ev) {
+        // Appending dialog to document.body to cover sidenav in docs app
+        var confirm = $mdDialog.prompt()
+          .title('New Top-Level Category')
+          .textContent('Enter a name for the category.')
+          .placeholder('Category name')
+          .ariaLabel('Category name')
+          .targetEvent(ev)
+          .ok('Okay!')
+          .cancel('Cancel');
+
+        $mdDialog.show(confirm).then(function(result) {
+          // this happens when you click Okay
+          $scope.createRoot(result);
+          //$scope.status = 'You decided to name your dog ' + result + '.';
+        }, function() {
+          // this happens when you click Cancel
         });
     };
 
@@ -402,7 +463,7 @@ helpApp.controller('HelpController',function HelpController($scope,$mdDialog,$ht
         });
     };
 
-    function DialogController($scope, $mdDialog, solution, url, part) {
+    function DialogController($scope, $mdDialog, solution, url, part, parentId) {
         $scope.hide = function() {
           $mdDialog.hide();
         };
@@ -415,10 +476,48 @@ helpApp.controller('HelpController',function HelpController($scope,$mdDialog,$ht
         $scope.solution = solution;
         $scope.url = url;
         $scope.part = part;
+        $scope.parentId = parentId;
     }
 
+    $scope.showAddSubcat = function(ev,parentId) {
+        //console.log(ev); console.log(parentId);
+        $mdDialog.show({
+          controller: DialogController,
+          templateUrl: '/static/addSubcat.tmpl.html',
+          parent: angular.element(document.body),
+          //targetEvent: ev,
+          clickOutsideToClose:true,
+          fullscreen: $scope.customFullscreen, // Only for -xs, -sm breakpoints.
+          locals: {
+            solution: null,
+            url: null,
+            part: null,
+            parentId: parentId
+          }
+        })
+        .then(function(subcat) {
+            if(subcat.name.length>0) {
+                console.log ('You said the information was "' + subcat.name + '".');
+                $scope.createSubcat(subcat);
+            } else {
+                console.log('No subcat name was entered!');
+            }
+        }, function() {
+          console.log ('You cancelled the dialog.');
+        });
+    };
 });
 
-helpApp.config(function($interpolateProvider) {
-    $interpolateProvider.startSymbol('//').endSymbol('//');
-})
+helpApp.controller('AddSubcatController',function ($scope) {
+        $scope.subcat = {
+            name: '',
+            type: '',
+            parentId: $scope.parentId
+        }
+        $scope.catTypes =('Subcategory Part Problem').split(' ').map(function(catType) {
+            return {name: catType};
+        });
+        $scope.answser = function (answer) {
+            console.log(answer);
+        };
+});

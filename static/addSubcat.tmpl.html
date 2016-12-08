@@ -1,0 +1,61 @@
+<div ng-controller="AddSubcatController" layout="column" class="md-inline-form">
+
+<md-dialog aria-label="Add Subcategory">
+
+  <form ng-cloak>
+    <md-toolbar>
+      <div class="md-toolbar-tools">
+        <h2>Add Subcategory</h2>
+        <span flex></span>
+        <md-button class="md-icon-button" ng-click="cancel()">
+          <md-icon md-svg-src="img/icons/ic_close_24px.svg" aria-label="Close dialog"></md-icon>
+        </md-button>
+      </div>
+    </md-toolbar>
+
+    <md-content layout-padding>
+
+      <div layout-gt-xs="row">
+        <md-input-container class="md-block" flex-gt-sm>
+          <label>Parent GUID (Disabled)</label>
+          <input ng-model="subcat.parentId">
+        </md-input-container>
+      </div>
+
+      <div layout-gt-xs="row">
+        <md-input-container class="md-block" flex-gt-sm>
+          <label>Subcategory Name</label>
+          <input ng-model="subcat.name">
+        </md-input-container>
+      </div>
+
+      <md-input-container class="md-block" flex-gt-sm>
+        <label>Type</label>
+        <md-select ng-model="subcat.type">
+          <md-option ng-repeat="type in catTypes" value="//type.name//">
+            //type.name//
+          </md-option>
+        </md-select>
+      </md-input-container>
+
+    </md-content>
+
+  </form>
+
+  <md-dialog-actions layout="row">
+    <span ng-if="url.length>7">
+    <md-button href="//url//" target="_blank" md-autofocus>
+      More on Internet
+    </md-button>
+    <span flex></span>
+    </span>
+    <md-button ng-click="answer('')">
+     Cancel
+    </md-button>
+    <md-button ng-click="answer(subcat)">
+      Create
+    </md-button>
+  </md-dialog-actions>
+
+</md-dialog>
+</div>
